@@ -53,7 +53,11 @@ function IssueResolver() {
         <section>
             <div className="companyStatus">
                 <div style={{ background: backDark, padding: ".5em", color: "white" }}>
-                    <h2>Issues Resolver</h2>
+                    <h2>Issues Resolver
+                        {
+                            spinner && <SpinnerRole />
+                        }
+                    </h2>
                 </div>
                 <div className="divider"></div>
 
