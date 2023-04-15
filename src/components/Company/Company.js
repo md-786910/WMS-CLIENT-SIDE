@@ -137,6 +137,7 @@ function Company() {
             showToastError("please add task");
             removeSpinner(e, "Add task");
         }
+
     };
 
     useEffect(() => {

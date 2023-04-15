@@ -18,7 +18,7 @@ function Company() {
                     id: id
                 });
                 if (resp.data.success) {
-                    showToastSuccess(resp.data.message);
+                    showToastSuccess("remove task");
                 } else {
                     showToastError(resp.data.message);
 
@@ -201,22 +201,24 @@ function Company() {
                                                                                     className="mt-2"
                                                                                     key={index}
                                                                                 >
-                                                                                    <div class="form-check">
-                                                                                        <input
-                                                                                            class="form-check-input"
-                                                                                            type="checkbox"
-                                                                                            value={d.name}
-                                                                                            id="defaultCheck1"
-                                                                                            onClick={(e) => compeleteTask(e, d._id)}
-                                                                                            checked={d.isCompleted}
-                                                                                        />
-                                                                                        <label
-                                                                                            class="form-check-label"
-                                                                                            for="defaultCheck1"
-                                                                                        >
-                                                                                            {d.name}
-                                                                                        </label>
-                                                                                    </div>
+                                                                                    {
+                                                                                        !d.isCompleted && <div class="form-check">
+                                                                                            <input
+                                                                                                class="form-check-input"
+                                                                                                type="checkbox"
+                                                                                                value={d.name}
+                                                                                                id="defaultCheck1"
+                                                                                                onClick={(e) => compeleteTask(e, d._id)}
+                                                                                                checked={d.isCompleted}
+                                                                                            />
+                                                                                            <label
+                                                                                                class="form-check-label"
+                                                                                                for="defaultCheck1"
+                                                                                            >
+                                                                                                {d.name}
+                                                                                            </label>
+                                                                                        </div>
+                                                                                    }
                                                                                 </Col>
                                                                             );
                                                                         })}
