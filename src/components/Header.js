@@ -55,6 +55,14 @@ function Header({ len }) {
                                     <span class="badge bg-success">{len}</span>
                                 </Link>
                             </li>
+                            <li class="nav-item">
+                                <Link
+                                    class="nav-link active"
+                                    to="/expence"
+                                >
+                                    My expences
+                                </Link>
+                            </li>
                         </ul>
                         <form class="d-flex">
                             <input
