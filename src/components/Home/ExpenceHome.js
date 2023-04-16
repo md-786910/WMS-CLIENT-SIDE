@@ -49,7 +49,7 @@ function ExpenceHome() {
                 <div className="companyBox">
                     <Row>
                         {
-                            data?.slice(0, 5).map((d, index) => {
+                            data?.map((d, index) => {
                                 return (
                                     <Col lg={4} key={index} className="mb-4">
                                         <div class="card">
@@ -69,13 +69,7 @@ function ExpenceHome() {
                                 )
                             })
                         }
-                        <div className="mt-3">
-                            <a href="https://github.com/md-786910" target="_blank" rel="noreferrer">
-                                <button className="btn" style={{ background: backDark, color: "white" }}>
-                                    Github profile
-                                </button>
-                            </a>
-                        </div>
+
                     </Row>
                 </div>
 

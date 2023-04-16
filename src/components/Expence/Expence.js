@@ -27,6 +27,7 @@ function Expence() {
                     amount: amount
                 });
                 if (resp.data.success) {
+                    getMoneyTrack();
                     showToastSuccess(resp.data.message);
                 } else {
                     showToastError(resp.data.message);
@@ -44,7 +45,7 @@ function Expence() {
         setAmount("")
     }
     // fetch task
-    const getMoneyTrack = async () => {
+    async function getMoneyTrack() {
         try {
             const resp = await Axios.get("/getMoney");
             if (resp.data.success) {
