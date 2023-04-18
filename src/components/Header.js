@@ -63,6 +63,14 @@ function Header({ len }) {
                                     My expences
                                 </Link>
                             </li>
+                            <li class="nav-item">
+                                <Link
+                                    class="nav-link active"
+                                    to="/learning"
+                                >
+                                    My learning
+                                </Link>
+                            </li>
                         </ul>
                         <form class="d-flex">
                             <input

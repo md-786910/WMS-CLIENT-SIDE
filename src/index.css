@@ -52,3 +52,6 @@ p {
 ::-webkit-scrollbar-thumb:hover {
   background: #393646;
 }
+.videoSame a {
+  text-decoration: none !important;
+}

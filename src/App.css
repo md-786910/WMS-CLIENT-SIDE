@@ -28,6 +28,11 @@ footer ul li a {
   top: -12em;
 }
 
+.iframeVideo {
+  position: sticky;
+  top: 4.5em;
+}
+
 @media screen and (max-width: 595px) {
   section {
     padding: 0em 0.5em;
