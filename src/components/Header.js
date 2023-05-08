@@ -71,6 +71,14 @@ function Header({ len }) {
                                     My learning
                                 </Link>
                             </li>
+                            <li class="nav-item">
+                                <Link
+                                    class="nav-link active"
+                                    to="/alarm"
+                                >
+                                    My alarm
+                                </Link>
+                            </li>
                         </ul>
                         <form class="d-flex">
                             <input

@@ -15,6 +15,7 @@ import Axios from "./utils/axios";
 import ResolveDetailPage from "./page/ResolveDetailPage";
 import ExpencePage from "./page/ExpencePage";
 import VideoPage from "./page/VideoPage";
+import AlarmPage from "./page/AlarmPage";
 
 function App() {
   const navigate = useNavigate();
@@ -53,6 +54,7 @@ function App() {
         <Route path="/resolve/:id" element={<ResolveDetailPage />} />
         <Route path="/add-company" element={<CompanyPage />} />
         <Route path="/expence" element={<ExpencePage />} />
+        <Route path="/alarm" element={<AlarmPage />} />
         <Route path="/learning" element={<VideoPage />} />
         <Route path="/company/:id" element={<CompanyPage />} />
         <Route path="/task" element={<MyTaskPage handleSize={handleSize} />} />
