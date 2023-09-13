@@ -4,6 +4,8 @@ import { SpinnerRole } from "../../utils/action";
 import { Col, Row } from "react-bootstrap";
 import Countdown from "react-countdown";
 import alarm from "./audio.mp3";
+import addNotification from "react-push-notification"
+import { Notifications } from 'react-push-notification';
 
 function Alarm() {
 
@@ -48,16 +50,16 @@ const[int,setInt] = useState(0)
 const audio = new Audio(alarm)
   // add task
 
-  const punchInBtn = (id,interval) => {
+  function punchInBtn(id, interval) {
     const jsonAlarm = JSON.parse(localStorage.getItem("alarm"));
     const filterAlarm = jsonAlarm.filter((e) => e.id === id);
     filterAlarm[0].puchIn = true;
 
-    setInt(interval)
+    setInt(interval);
 
     localStorage.setItem("alarm", JSON.stringify(jsonAlarm));
-    setRand(Math.random())
-  };
+    setRand(Math.random());
+  }
   const resetAlarm = (id) => {
     audio.pause()
     const jsonAlarm = JSON.parse(localStorage.getItem("alarm"));
@@ -71,14 +73,23 @@ const audio = new Audio(alarm)
 
   };
 
-
+const notOpen = ()=>{
+  alert("hi")
+  addNotification({
+    title: 'Take a Break - 15 minutes',
+    subtitle: 'This is a subtitle',
+    message: 'This is a very long message',
+    theme: 'darkblue',
+    native: true // when using native, your OS will handle theming.
+});
+}
 
 
   // Renderer callback with condition
 const renderer = ({ hours, minutes, seconds, completed }) => {
    if (completed) {
       audio.play()
-     
+  
       return <Timer interval={int}/>
     } else {
       document.title = `${hours}:${minutes}:${seconds}`
@@ -112,7 +123,7 @@ const renderer = ({ hours, minutes, seconds, completed }) => {
           <div
             style={{ background: backDark, padding: ".5em", color: "white" }}
           >
-            <h2>My alarm {loader && <SpinnerRole />}</h2>
+            <h2>My alarm {loader && <SpinnerRole />}</h2><Notifications/>
           </div>
           <div className="divider"></div>
 
@@ -122,6 +133,7 @@ const renderer = ({ hours, minutes, seconds, completed }) => {
                 <label for="exampleFormControlInput1" class="form-label">
                   <strong>Add alarm</strong>
                 </label>
+                <button onClick={notOpen}>open</button>
               </div>
             </div>
 
