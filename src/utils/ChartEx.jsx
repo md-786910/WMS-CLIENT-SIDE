@@ -55,16 +55,22 @@ function ChartExp({ bg, Mode, d }) {
   //   } else {
   //     return 0;
   //   }
-  const setData = labels?.map((m) => {
-    const newData = d?.map((i) => {
-      if (m === i.month[0].month) {
-        return i.month[0].amount;
-      } else {
-        return 0;
-      }
-    });
-    return newData;
+  // const setData = labels?.map((m) => {
+  //   const newData = d?.map((i) => {
+  //     if (m === i.month[0].month) {
+  //       return i.month[0].amount;
+  //     } else {
+  //       return 0;
+  //     }
+  //   });
+  //   return newData;
+  // });
+  const setData = labels.map((label) => {
+    const matchingItem = d?.find((item) => item.month[0].month === label);
+    return matchingItem ? matchingItem.amount : 0;
   });
+
+  console.log(setData);
 
   const data = {
     labels,
