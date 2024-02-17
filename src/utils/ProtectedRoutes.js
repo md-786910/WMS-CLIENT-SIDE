@@ -11,7 +11,12 @@ export const Protected = () => {
       faceId?.facialId === "fe709f62542b4dbe8529b77bbb7afc71fioaeb88" ? (
         <Outlet />
       ) : (
-        <Navigate to="/login" redirect="/" replace state={{ from: location }} />
+        <Navigate
+          to="/login"
+          redirect="/login"
+          replace
+          state={{ from: location }}
+        />
       )}
     </>
   );
