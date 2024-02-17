@@ -2,7 +2,7 @@ export const isAuthenticated = () => {
   if (typeof window == "undefined") {
     return true;
   }
-  if (localStorage.getItem("userAuth")) {
+  if (localStorage.getItem("faceAuth")) {
     return JSON.parse(localStorage.getItem("faceAuth"));
   } else {
     return false;
