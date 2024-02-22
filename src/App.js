@@ -49,10 +49,7 @@ function App() {
 
   return (
     <>
-      {faceId &&
-        faceId?.facialId === "fe709f62542b4dbe8529b77bbb7afc71fioaeb88" && (
-          <Header len={size} />
-        )}
+      {faceId && faceId?.facialId && <Header len={size} />}
 
       <Routes>
         <Route path="/login" element={<Login />} />

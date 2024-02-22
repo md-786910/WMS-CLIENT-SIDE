@@ -7,8 +7,7 @@ export const Protected = () => {
   const location = useLocation();
   return (
     <>
-      {faceId &&
-      faceId?.facialId === "fe709f62542b4dbe8529b77bbb7afc71fioaeb88" ? (
+      {faceId && faceId?.facialId ? (
         <Outlet />
       ) : (
         <Navigate

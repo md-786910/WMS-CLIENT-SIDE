@@ -1,6 +1,6 @@
 import React from "react";
 import { addSpinner, removeSpinner } from "../utils/action";
-import { authenticateUser } from "../face_auths/faceAuth";
+import { authenticateUser, enrollNewUser } from "../face_auths/faceAuth";
 
 function Login() {
   return (
@@ -29,6 +29,7 @@ function Login() {
                 >
                   LOGIN
                 </button>
+                <button onClick={enrollNewUser}>Enroll</button>
               </div>
             </div>
           </div>
