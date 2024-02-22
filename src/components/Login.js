@@ -29,7 +29,6 @@ function Login() {
                 >
                   LOGIN
                 </button>
-                <button onClick={enrollNewUser}>Enroll</button>
               </div>
             </div>
           </div>
