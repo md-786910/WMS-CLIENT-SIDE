@@ -31,7 +31,7 @@ function Login() {
                   onClick={(e) => {
                     addSpinner(e);
                     console.log("user", user)
-                    console.log("String(process.env.user", String(process.env.REACT_APP_USER))
+                    console.log("String(process.env.REACT_APP_USER", String(process.env.REACT_APP_USER))
 
                     if (user === String(process.env.REACT_APP_USER)) {
                       localStorage.setItem("faceAuth", JSON.stringify({ user }));
