@@ -49,7 +49,7 @@ function App() {
 
   return (
     <>
-      {faceId && faceId?.facialId && <Header len={size} />}
+      {faceId && faceId?.user === String(process.env.REACT_APP_USER) && <Header len={size} />}
 
       <Routes>
         <Route path="/login" element={<Login />} />

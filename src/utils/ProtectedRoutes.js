@@ -7,7 +7,7 @@ export const Protected = () => {
   const location = useLocation();
   return (
     <>
-      {faceId && faceId?.facialId ? (
+      {faceId && faceId?.user === String(process.env.REACT_APP_USER) ? (
         <Outlet />
       ) : (
         <Navigate
