@@ -9,9 +9,12 @@ import {
 } from "../../utils/action";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
-import { Col, Row } from "react-bootstrap";
+import { Button, Col, Row } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { BsCheckCircleFill } from "react-icons/bs";
+import { TiDelete } from "react-icons/ti";
+import { FaEdit } from "react-icons/fa";
+
 import { RxCross2 } from "react-icons/rx";
 import Axios from "../../utils/axios";
 function Resolve() {
@@ -99,7 +102,12 @@ function Resolve() {
                       return (
                         d.isResolved && (
                           <Col lg={4} className="mb-4" key={index}>
-                            <div class="card">
+                            <div
+                              class="card"
+                              style={{
+                                height: "15rem",
+                              }}
+                            >
                               <div class="card-body">
                                 <h5 class="card-title">
                                   <strong>{d.title}</strong>
@@ -110,16 +118,45 @@ function Resolve() {
                                     __html: d.content.substr(0, 100),
                                   }}
                                 ></p>
-                                <Link
-                                  to={`/resolve/${d._id}`}
-                                  class="btn border"
-                                >
-                                  Read &nbsp;
-                                  <BsCheckCircleFill
-                                    color={"green"}
-                                    size={18}
-                                  />
-                                </Link>
+                                <div className="d-flex gap-4 position-absolute bottom-0 pb-2">
+                                  <button
+                                    style={{
+                                      border: "none",
+                                    }}
+                                  >
+                                    <Link to={`/resolve/${d._id}`} class="btn">
+                                      Read &nbsp;
+                                      <BsCheckCircleFill
+                                        color={"green"}
+                                        size={18}
+                                      />
+                                    </Link>
+                                  </button>
+                                  <button
+                                    style={{
+                                      border: "none",
+                                    }}
+                                  >
+                                    <Link
+                                      to={`/add-issues/${d?._id}/`}
+                                      class="btn"
+                                    >
+                                      Edit &nbsp;
+                                      <FaEdit color={"blue"} size={18} />
+                                    </Link>
+                                  </button>
+                                  <button
+                                    style={{
+                                      border: "none",
+                                    }}
+                                    onClick={(e) => deleteIssues(e, d._id)}
+                                  >
+                                    <Link to="#" class="btn">
+                                      Delete &nbsp;
+                                      <TiDelete color={"red"} size={27} />
+                                    </Link>
+                                  </button>
+                                </div>
                               </div>
                             </div>
                           </Col>
@@ -134,15 +171,23 @@ function Resolve() {
                       return (
                         !d.isResolved && (
                           <Col lg={4} className="mb-4" key={index}>
-                            <div class="card">
+                            <div
+                              class="card"
+                              style={{
+                                height: "15rem",
+                              }}
+                            >
                               <div class="card-body">
                                 <h5 class="card-title">
-                                  Special title treatment
+                                  <strong>{d.title}</strong>
                                 </h5>
-                                <p class="card-text">
-                                  With supporting text below as a natural
-                                  lead-in to additional content.
-                                </p>
+
+                                <p
+                                  class="card-text"
+                                  dangerouslySetInnerHTML={{
+                                    __html: d.content.substr(0, 100),
+                                  }}
+                                ></p>
                                 <button
                                   class="btn border"
                                   onClick={(e) => resolvedIssues(e, d._id)}

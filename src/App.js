@@ -49,13 +49,15 @@ function App() {
 
   return (
     <>
-      {faceId && faceId?.user === String(process.env.REACT_APP_USER) && <Header len={size} />}
+      {faceId && faceId?.user === String(process.env.REACT_APP_USER) && (
+        <Header len={size} />
+      )}
 
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route exact element={<Protected />}>
           <Route path="/" element={<HomePage />} />
-          <Route path="/add-issues" element={<IssuePage />} />
+          <Route path="/add-issues/:id?" element={<IssuePage />} />
           <Route path="/resolve" element={<ResolverPage />} />
           <Route path="/resolve/:id" element={<ResolveDetailPage />} />
           <Route path="/add-company" element={<CompanyPage />} />
