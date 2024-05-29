@@ -5,7 +5,7 @@ import axios from "axios";
 
 const base =
   process.env.NODE_ENV === "production"
-    ? "https://tiny-jade-goshawk-belt.cyclic.app"
+    ? "https://wms-server-wr3u.onrender.com"
     : "http://localhost:5000";
 
 const Axios = axios.create({
