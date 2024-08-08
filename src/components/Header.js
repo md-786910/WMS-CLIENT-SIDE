@@ -2,7 +2,13 @@ import React from "react";
 import { backDark } from "../utils/color";
 import { Link } from "react-router-dom";
 import { handleLogout } from "../utils/isAuth";
+import Searchbar from "./Searchbar";
+
 function Header({ len }) {
+
+
+
+
   return (
     <nav>
       <nav
@@ -66,13 +72,8 @@ function Header({ len }) {
                 </Link>
               </li>
             </ul>
-            <div class="d-flex">
-              <input
-                class="form-control me-2"
-                type="search"
-                placeholder="Search issues"
-                aria-label="Search"
-              />
+            <div class="d-flex align-items-center gap-4">
+              <Searchbar />
               <button
                 class="btn btn-outline-danger"
                 type="button"

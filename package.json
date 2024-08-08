@@ -24,6 +24,7 @@
     "react-scripts": "5.0.1",
     "react-time-picker": "^6.0.4",
     "react-toastify": "^9.1.2",
+    "react-use": "^17.5.1",
     "tinymce": "^6.4.1",
     "web-vitals": "^2.1.4"
   },

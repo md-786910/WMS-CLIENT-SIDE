@@ -55,3 +55,13 @@ p {
 .videoSame a {
   text-decoration: none !important;
 }
+
+.ptr {
+  cursor: pointer;
+}
+.searchTag a {
+  text-decoration: none;
+  color: black;
+  font-weight: 600;
+  font-size: 21px;
+}

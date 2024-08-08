@@ -29,7 +29,7 @@ function ResolveDetail() {
   useEffect(() => {
     fetchIssues();
     // eslint-disable-next-line
-  }, []);
+  }, [id]);
 
   return (
     <>

@@ -146,7 +146,7 @@ function Company() {
             fetchCompanyById();
         }
         // eslint-disable-next-line
-    }, []);
+    }, [id]);
     return (
         <>
             <section>
