@@ -1,11 +1,30 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { backDark } from "../utils/color";
 import { Link } from "react-router-dom";
 import { handleLogout } from "../utils/isAuth";
 import Searchbar from "./Searchbar";
+import { getAllFile } from "../api";
+import { showToastError } from "../utils/action";
 
 function Header({ len }) {
+  const [checkFile, setCheckFile] = useState([]);
 
+  async function getFiles() {
+    try {
+      const response = await getAllFile()
+      if (response.status === 200) {
+        setCheckFile(response.data?.files)
+
+      }
+    } catch (error) {
+      showToastError(error)
+
+    }
+  }
+  useEffect(() => {
+    getFiles()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
 
 
@@ -69,6 +88,11 @@ function Header({ len }) {
               <li class="nav-item">
                 <Link class="nav-link active" to="/alarm">
                   My alarm
+                </Link>
+              </li>
+              <li class="nav-item">
+                <Link class="nav-link active bg-warning rounded text-black fw-bold" to={`/notebook/${checkFile[0]?._id}-${checkFile[0]?.fileName}`}>
+                  My notebook
                 </Link>
               </li>
             </ul>

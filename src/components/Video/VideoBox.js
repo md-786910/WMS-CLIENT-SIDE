@@ -96,7 +96,8 @@ function VideoBox() {
                   <iframe
                     width="100%"
                     height="560"
-                    src={`https://www.youtube.com/embed/${videoId}?rel=0&amp;autoplay=1&amp;controls=1&amp;showinfo=0`}
+                    src={`https://www.youtube.com/embed/${videoId}?rel=0&amp;autoplay=1&amp;controls=1&amp;showinfo=0&suggest=none`}
+
                     title="YouTube video player"
                     frameborder="1"
                     allow="accelerometer;autoplay;gyroscope;"
@@ -139,6 +140,14 @@ function VideoBox() {
                     </Link>
                   ))}
                 </div>
+              </Col>
+
+              <Col lg={12}>
+
+                <button>
+                  Prev
+                </button>
+
               </Col>
             </Row>
           </div>

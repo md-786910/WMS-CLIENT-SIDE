@@ -9,10 +9,17 @@ import {
 } from "../../utils/action";
 import { Col, Row } from "react-bootstrap";
 import Axios from "../../utils/axios";
+import { useLocation } from "react-router-dom";
 
-function Task({ handleSize }) {
+function Task(props) {
+  const location = useLocation();
+  const cardRef = useRef(null)
   const [title, setTitle] = useState("");
   const [data, setData] = useState([]);
+
+  const renderCount = parseInt(location.search?.slice(6))
+  const [cardNo, setCardNo] = useState(renderCount)
+
   // add task
   const addTask = async (e) => {
     addSpinner(e);
@@ -23,7 +30,7 @@ function Task({ handleSize }) {
         });
         if (resp.data.success) {
           showToastSuccess(resp.data.message);
-          handleSize(Math.random());
+          // handleSize(Math.random());
         } else {
           showToastError(resp.data.message);
         }
@@ -61,7 +68,7 @@ function Task({ handleSize }) {
       const resp = await Axios.post("/removeTask", { id: id });
       if (resp.data.success) {
         showToastSuccess(resp.data.message);
-        handleSize(Math.random());
+        // handleSize(Math.random());
       } else {
         showToastError(resp.data.message);
       }
@@ -76,7 +83,25 @@ function Task({ handleSize }) {
   useEffect(() => {
     getTask();
     // eslint-disable-next-line
-  }, []);
+  }, [cardRef]);
+
+  // useEffect(() => {
+  //   setCardNo(cardLocation)
+  // }, [cardLocation])
+  useEffect(() => {
+    if (cardRef.current) {
+      const cardElement = cardRef.current;
+      const cardToScrollTo = cardElement.children[cardNo - 1];
+      if (cardToScrollTo) {
+        setTimeout(() => {
+          const offsetTop = cardToScrollTo.offsetTop;
+          window.scrollTo(0, offsetTop);
+        }, 10);
+
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [renderCount, cardRef, location.search]);
 
   return (
     <>
@@ -114,23 +139,26 @@ function Task({ handleSize }) {
               </div>
             </div>
 
-            <Row>
+            <Row
+              ref={(el) => { cardRef.current = el }}
+
+            >
               {data?.map((d, index) => {
                 return (
-                  <Col col lg={3} md={3} sm={6} key={index}>
+                  <Col col={12} lg={4} md={4} sm={6} key={index}>
                     <div
                       class="card-body"
-                      style={
-                        {
-                          // height: "15rem",
-                        }
-                      }
+
                     >
-                      <div class="border border-1">
+                      <div style={{
+                        height: "12rem",
+                        border: cardNo === index + 1 ? "5px solid blue" : "1px solid gray"
+                      }}
+                      >
                         <div class="card-header">
                           <h5>#Task - {index + 1}</h5>
                         </div>
-                        <div class="card-body">
+                        <div class="card-body ">
                           <a
                             href={d?.title}
                             rel="noreferrer"
@@ -156,7 +184,7 @@ function Task({ handleSize }) {
             </Row>
           </div>
         </div>
-      </section>
+      </section >
     </>
   );
 }

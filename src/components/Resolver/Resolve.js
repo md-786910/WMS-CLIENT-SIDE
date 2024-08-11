@@ -9,13 +9,12 @@ import {
 } from "../../utils/action";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
-import { Button, Col, Row } from "react-bootstrap";
+import { Col, Row } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { BsCheckCircleFill } from "react-icons/bs";
 import { TiDelete } from "react-icons/ti";
 import { FaEdit } from "react-icons/fa";
 
-import { RxCross2 } from "react-icons/rx";
 import Axios from "../../utils/axios";
 function Resolve() {
   const [spinner, setSpinner] = useState(true);
@@ -24,7 +23,7 @@ function Resolve() {
   const resolvedIssues = async (e, id) => {
     addSpinner(e);
     try {
-      const resp = await Axios.patch("/updateIssues", { id: id });
+      const resp = await Axios.patch(`/updateIssues/status/${id}`);
       if (resp.data.success) {
         showToastSuccess(resp.data.message);
       } else {
@@ -58,7 +57,25 @@ function Resolve() {
   const deleteIssues = async (e, id) => {
     addSpinner(e);
     try {
-      const resp = await Axios.post("/removeIssues", { id: id });
+      const resp = await Axios.delete(`/removeIssues/${id}`);
+      if (resp.data.success) {
+        showToastSuccess(resp.data.message);
+      } else {
+        showToastError(resp.data.message);
+      }
+    } catch (error) {
+      showToastError("Task added failed");
+    } finally {
+      removeSpinner(e, "Remove");
+      fetchIssues();
+    }
+  };
+
+  // delete permanent  task
+  const deletePermanentTask = async (e, id) => {
+    addSpinner(e);
+    try {
+      const resp = await Axios.delete(`/permanent-delete/${id}`);
       if (resp.data.success) {
         showToastSuccess(resp.data.message);
       } else {
@@ -100,7 +117,7 @@ function Resolve() {
                   <Row>
                     {data?.map((d, index) => {
                       return (
-                        d.isResolved && (
+                        !d.isDeleted && (
                           <Col lg={4} className="mb-4" key={index}>
                             <div
                               class="card"
@@ -165,11 +182,11 @@ function Resolve() {
                     })}
                   </Row>
                 </Tab>
-                <Tab eventKey="profile" title="Pending">
+                <Tab eventKey="profile" title="Trash">
                   <Row>
                     {data?.map((d, index) => {
                       return (
-                        !d.isResolved && (
+                        d.isDeleted && (
                           <Col lg={4} className="mb-4" key={index}>
                             <div
                               class="card"
@@ -188,19 +205,36 @@ function Resolve() {
                                     __html: d.content.substr(0, 100),
                                   }}
                                 ></p>
-                                <button
-                                  class="btn border"
-                                  onClick={(e) => resolvedIssues(e, d._id)}
-                                >
-                                  Resolve &nbsp;
-                                  <RxCross2 color={"red"} size={18} />
-                                </button>
-                                <div
-                                  className="btn mx-2"
-                                  onClick={(e) => deleteIssues(e, d._id)}
-                                >
-                                  <button className="btn border">Remove</button>
+
+                                <div className="d-flex gap-4 position-absolute bottom-0 pb-2">
+                                  <button
+                                    style={{
+                                      border: "none",
+                                    }}
+                                    onClick={(e) => resolvedIssues(e, d._id)}
+                                  >
+                                    <Link to="#" class="btn">
+                                      Backup now &nbsp;
+                                      <BsCheckCircleFill
+                                        color={"green"}
+                                        size={18}
+                                      />
+                                    </Link>
+                                  </button>
+
+                                  <button
+                                    style={{
+                                      border: "none",
+                                    }}
+                                    onClick={(e) => deletePermanentTask(e, d._id)}
+                                  >
+                                    <Link to="#" class="btn">
+                                      Ignore &nbsp;
+                                      <TiDelete color={"red"} size={27} />
+                                    </Link>
+                                  </button>
                                 </div>
+
                               </div>
                             </div>
                           </Col>

@@ -15,7 +15,7 @@ function Searchbar() {
     }
 
     const handleSearchChange = (e) => {
-        const text = e.target.value?.trim();
+        const text = e.target.value;
         setSearch(text)
     }
 

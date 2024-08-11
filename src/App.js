@@ -18,11 +18,12 @@ import AlarmPage from "./page/AlarmPage";
 import { Protected } from "./utils/ProtectedRoutes";
 import Login from "./components/Login";
 import { isAuthenticated } from "./utils/isAuth";
+import NotebookPage from "./page/NotebookPage";
 
 function App() {
   const navigate = useNavigate();
   const [size, setSize] = useState(0);
-  const [render, setRender] = useState(0);
+  // const [render, setRender] = useState(0);
 
   // Face lock
   const faceId = isAuthenticated();
@@ -40,12 +41,13 @@ function App() {
     }
   };
 
-  const handleSize = (props) => {
-    setRender(props);
-  };
+  // const handleSize = (props) => {
+  //   setRender(props);
+  // };
   useEffect(() => {
     fetchCart();
-  }, [render]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [window.location]);
 
   return (
     <>
@@ -64,10 +66,13 @@ function App() {
           <Route path="/expence" element={<ExpencePage />} />
           <Route path="/alarm" element={<AlarmPage />} />
           <Route path="/learning" element={<VideoPage />} />
+          <Route path="/notebook/:fileName" element={<NotebookPage />} />
           <Route path="/company/:id" element={<CompanyPage />} />
           <Route
             path="/task"
-            element={<MyTaskPage handleSize={handleSize} />}
+            element={<MyTaskPage
+            // handleSize={handleSize}
+            />}
           />
         </Route>
       </Routes>
