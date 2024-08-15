@@ -108,7 +108,9 @@ function SearchModel(props) {
               data?.map((elem, index) => {
                 return (
                   <div className='card p-2 searchTag border shadow-sm border-primary mb-3' key={index}>
-                    <Link to={`/${elem?.redirectTo}`} onClick={() => handleClose()}>{elem?.title || elem?.name || elem?.fileName || elem?.content?.slice(0, 40)}</Link>
+                    <Link to={`/${elem?.redirectTo}`} onClick={() => handleClose()}>
+                      <div dangerouslySetInnerHTML={{ __html: elem?.title || elem?.name || elem?.fileName || elem?.content?.slice(0, 100) }} />
+                    </Link>
 
 
                   </div>

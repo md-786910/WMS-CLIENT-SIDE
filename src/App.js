@@ -19,6 +19,7 @@ import { Protected } from "./utils/ProtectedRoutes";
 import Login from "./components/Login";
 import { isAuthenticated } from "./utils/isAuth";
 import NotebookPage from "./page/NotebookPage";
+import Test from "./components/Test";
 
 function App() {
   const navigate = useNavigate();
@@ -73,6 +74,10 @@ function App() {
             element={<MyTaskPage
             // handleSize={handleSize}
             />}
+          />
+          <Route
+            path="/test"
+            element={<Test />}
           />
         </Route>
       </Routes>

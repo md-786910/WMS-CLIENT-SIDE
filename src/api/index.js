@@ -7,6 +7,10 @@ export const getAllFile = async () => {
     return Axios.get("/get-all-file")
 }
 
+export const orderNotebookFiles = async (payload) => {
+    return Axios.patch("/order-notebook-files", payload)
+}
+
 export const deleteFilesNameWithContent = async (fileId) => {
     return Axios.delete(`/delete-file/${fileId}`)
 }
