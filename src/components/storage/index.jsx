@@ -224,12 +224,12 @@ function StorageIndex() {
                 {/* for folder > files */}
 
                 {
-                    parseInt(queryStr.stage) === 2 && <FileCard folderId={queryStr?.folderId} uploadProgress={uploadProgress} />
+                    parseInt(queryStr.stage) === 2 && <FileCard folderId={queryStr?.folderId} uploadProgress={uploadStatus} />
                 }
 
                 {/* files  */}
                 {
-                    parseInt(queryStr.stage) === 1 && <FileCard folderId={null} uploadProgress={uploadProgress} />
+                    parseInt(queryStr.stage) === 1 && <FileCard folderId={null} uploadProgress={uploadStatus} />
                 }
 
 
