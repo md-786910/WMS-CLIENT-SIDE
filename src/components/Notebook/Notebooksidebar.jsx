@@ -142,10 +142,12 @@ function Notebooksidebar(props) {
                 onDragOver={(e) => handleDragOver(e)}
                 onDrop={(e) => handleDrop(e, file)}
               >
-                <span>
+              <div>
+              <span>
                   <GoGrabber />
                 </span>
                 <a href={`/notebook/${file?._id}-${file?.fileName}`} style={{ color: 'blue', fontWeight: "500", fontSize: "17px", textDecoration: "none", textAlign: "start" }}> {file?.fileName?.slice(0, 20)}. </a>
+              </div>
                 <span>
                   <button
                     style={{
