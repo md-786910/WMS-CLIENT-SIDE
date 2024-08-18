@@ -20,6 +20,7 @@ import Login from "./components/Login";
 import { isAuthenticated } from "./utils/isAuth";
 import NotebookPage from "./page/NotebookPage";
 import Test from "./components/Test";
+import StoragePage from "./page/StoragePage";
 
 function App() {
   const navigate = useNavigate();
@@ -72,8 +73,11 @@ function App() {
           <Route
             path="/task"
             element={<MyTaskPage
-            // handleSize={handleSize}
             />}
+          />
+          <Route
+            path="/cloud-storage"
+            element={<StoragePage />}
           />
           <Route
             path="/test"

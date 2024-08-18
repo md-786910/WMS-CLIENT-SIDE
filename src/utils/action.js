@@ -33,7 +33,7 @@ export const showToastSuccess = (text) => {
   });
 };
 export const showToastError = (text) => {
-  toast.error(text, {
+  toast.error(text?.response?.data?.message || text?.message || text, {
     position: toast.POSITION.TOP_RIGHT,
     autoClose: 3000,
     hideProgressBar: false,

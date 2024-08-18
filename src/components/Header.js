@@ -36,7 +36,7 @@ function Header({ len }) {
       >
         <div class="container-fluid">
           <Link class="navbar-brand" to="/">
-            <h4>
+            <h4 className="text-info mt-2">
               <strong>W-M-S</strong>
             </h4>
           </Link>
@@ -96,8 +96,17 @@ function Header({ len }) {
                 </Link>
               </li>
             </ul>
-            <div class="d-flex align-items-center gap-4">
-              <Searchbar />
+            <div class="d-flex align-items-center gap-2">
+              <div className="me-3">
+                <Searchbar />
+              </div>
+              <Link
+                to="/cloud-storage?type=folder&lable=root&stage=1"
+                class="btn btn-primary"
+                type="button"
+              >
+                Cloud storage
+              </Link>
               <button
                 class="btn btn-outline-danger"
                 type="button"
