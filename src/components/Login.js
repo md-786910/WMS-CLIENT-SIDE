@@ -11,6 +11,28 @@ function Login() {
   const navigate = useNavigate();
   const [user, setUser] = useState("");
 
+  const handleSubmit = (e) => {
+    addSpinner(e);
+    console.log("user", user);
+    console.log(
+      "String(process.env.REACT_APP_USER",
+      String(process.env.REACT_APP_USER)
+    );
+
+    if (user === String(process.env.REACT_APP_USER)) {
+      localStorage.setItem(
+        "faceAuth",
+        JSON.stringify({ user })
+      );
+      showToastSuccess("i am login success");
+      navigate("/");
+    } else {
+      showToastError("Please enter a valid username");
+    }
+    removeSpinner(e, "LOGIN");
+
+  }
+
   return (
     <>
       <div className="container-fluid login-container">
@@ -26,40 +48,22 @@ function Login() {
                   😍
                 </div>
                 <h3 className="mb-3">Login to WMS</h3>
-                <input
-                  type="password"
-                  name="user"
-                  value={user}
-                  onChange={(e) => setUser(e.target.value)}
-                  className="form-control absolute"
-                  placeholder=" login to WMS"
-                />
-                <button
-                  type="button"
-                  className="mt-3 w-100 btn btn-danger btn-block"
-                  onClick={(e) => {
-                    addSpinner(e);
-                    console.log("user", user);
-                    console.log(
-                      "String(process.env.REACT_APP_USER",
-                      String(process.env.REACT_APP_USER)
-                    );
-
-                    if (user === String(process.env.REACT_APP_USER)) {
-                      localStorage.setItem(
-                        "faceAuth",
-                        JSON.stringify({ user })
-                      );
-                      showToastSuccess("i am login success");
-                      navigate("/");
-                    } else {
-                      showToastError("Please enter a valid username");
-                    }
-                    removeSpinner(e, "LOGIN");
-                  }}
-                >
-                  LOGIN
-                </button>
+                <form onSubmit={handleSubmit}>
+                  <input
+                    type="password"
+                    name="user"
+                    value={user}
+                    onChange={(e) => setUser(e.target.value)}
+                    className="form-control absolute"
+                    placeholder=" login to WMS"
+                  />
+                  <button
+                    type="button"
+                    className="mt-3 w-100 btn btn-danger btn-block"
+                  >
+                    LOGIN
+                  </button>
+                </form>
               </div>
             </div>
           </div>
