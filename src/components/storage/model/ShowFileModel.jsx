@@ -1,6 +1,5 @@
 import React from 'react'
 import { Button, Modal } from 'react-bootstrap'
-import { downloadFile } from '../../../utils/extPath';
 
 function ShowFileModel(props) {
     const { show, handleClose, file } = props;
@@ -57,7 +56,7 @@ function ShowFileModel(props) {
                     </div>
                 </Modal.Body>
                 <Modal.Footer>
-                    <a variant="success" href={"#"} download={file?.fileName} target='_blank' rel="noreferrer">
+                    <a variant="success" href={file?.fileName} download={file?.fileName} target='_blank' rel="noreferrer">
                         Download
                     </a>
                     <Button variant="danger" onClick={handleClose}>

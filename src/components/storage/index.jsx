@@ -174,7 +174,7 @@ function StorageIndex() {
                 </div>
                 <div className="divider"></div>
 
-                <div className='file-content  d-flex gap-2'>
+                <div className='file-content  d-flex gap-3 flex-wrap'>
                     {
                         parseInt(queryStr.stage) !== 2 && folderArray?.map((folder, index) => {
                             return (

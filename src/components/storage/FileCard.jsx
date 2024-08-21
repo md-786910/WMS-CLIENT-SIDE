@@ -35,7 +35,7 @@ function FileCard({ folderId = null, uploadProgress }) {
         // eslint-disable-next-line
     }, [uploadProgress]);
     return (
-        <div className='file-content  d-flex mt-5 gap-2'>
+        <div className='file-content  d-flex mt-5 gap-3 flex-wrap'>
             {
                 files?.map((file, index) => {
                     return (
