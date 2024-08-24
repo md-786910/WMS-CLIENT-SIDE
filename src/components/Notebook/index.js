@@ -5,6 +5,8 @@ import { createNotebook, getAllContentNotebook } from '../../api';
 import { showToastError } from '../../utils/action';
 import debounce from 'lodash.debounce';
 
+
+
 function NotebookIndex() {
     const { fileName } = useParams();
     const [initVal, setInitVal] = useState("");
@@ -12,8 +14,10 @@ function NotebookIndex() {
 
     const editorRef = useRef();
     const debouncedChangeHandler = debounce(handleChange, 500); // 500ms delay
-
     const fileSplit = fileName?.split("-")[0];
+
+
+
 
     async function handleChange(content) {
         try {

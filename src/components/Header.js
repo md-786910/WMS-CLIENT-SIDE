@@ -101,6 +101,13 @@ function Header({ len }) {
                 <Searchbar />
               </div>
               <Link
+                to="/code-editor"
+                class="btn btn-danger"
+                type="button"
+              >
+                Code Editor
+              </Link>
+              <Link
                 to="/cloud-storage?type=folder&lable=root&stage=1"
                 class="btn btn-primary"
                 type="button"

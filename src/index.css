@@ -82,3 +82,7 @@ p {
   font-weight: 500;
   font-size: 17px;
 }
+
+.CodeMirror * {
+  font-size: 18px !important;
+}

@@ -21,6 +21,7 @@ import { isAuthenticated } from "./utils/isAuth";
 import NotebookPage from "./page/NotebookPage";
 import Test from "./components/Test";
 import StoragePage from "./page/StoragePage";
+import CodeEditor from "./components/codeEditor";
 
 function App() {
   const navigate = useNavigate();
@@ -84,6 +85,11 @@ function App() {
             element={<Test />}
           />
         </Route>
+
+        <Route
+          path="/code-editor"
+          element={<CodeEditor />}
+        />
       </Routes>
 
       <div className="addIssues">

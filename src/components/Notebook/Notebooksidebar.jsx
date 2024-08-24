@@ -39,7 +39,6 @@ function Notebooksidebar(props) {
     if (draggedIndex !== targetIndex) {
       updatedItems.splice(targetIndex, 0, updatedItems.splice(draggedIndex, 1)[0]);
       setFiles(updatedItems);
-      console.log({ files })
       // Send PATCH request with all files and their new order
       const dataOrder = updatedItems.map((item) => ({ fileName: item.fileName, order: item.order, _id: item?._id }));
       try {
@@ -142,12 +141,12 @@ function Notebooksidebar(props) {
                 onDragOver={(e) => handleDragOver(e)}
                 onDrop={(e) => handleDrop(e, file)}
               >
-              <div>
-              <span>
-                  <GoGrabber />
-                </span>
-                <a href={`/notebook/${file?._id}-${file?.fileName}`} style={{ color: 'blue', fontWeight: "500", fontSize: "17px", textDecoration: "none", textAlign: "start" }}> {file?.fileName?.slice(0, 20)}. </a>
-              </div>
+                <div>
+                  <span>
+                    <GoGrabber />
+                  </span>
+                  <a href={`/notebook/${file?._id}-${file?.fileName}`} style={{ color: 'blue', fontWeight: "500", fontSize: "17px", textDecoration: "none", textAlign: "start" }}> {file?.fileName?.slice(0, 20)}. </a>
+                </div>
                 <span>
                   <button
                     style={{

@@ -4,13 +4,11 @@ import { SpinnerRole } from "../../utils/action";
 import { Col, Row } from "react-bootstrap";
 import Countdown from "react-countdown";
 import alarm from "./audio.mp3";
-import addNotification from "react-push-notification"
-import { Notifications } from 'react-push-notification';
 
 function Alarm() {
 
-const [rand,setRand] = useState(0)
-const[int,setInt] = useState(0)
+  const [rand, setRand] = useState(0)
+  const [int, setInt] = useState(0)
   const [data, setData] = useState([
     {
       title: "1 Minute",
@@ -47,7 +45,7 @@ const[int,setInt] = useState(0)
   ]);
   const [loader, setLoader] = useState(false);
 
-const audio = new Audio(alarm)
+  const audio = new Audio(alarm)
   // add task
 
   function punchInBtn(id, interval) {
@@ -73,34 +71,34 @@ const audio = new Audio(alarm)
 
   };
 
-const notOpen = ()=>{
-  alert("hi")
-  addNotification({
-    title: 'Take a Break - 15 minutes',
-    subtitle: 'This is a subtitle',
-    message: 'This is a very long message',
-    theme: 'darkblue',
-    native: true // when using native, your OS will handle theming.
-});
-}
+  const notOpen = () => {
+    alert("hi")
+    //   addNotification({
+    //     title: 'Take a Break - 15 minutes',
+    //     subtitle: 'This is a subtitle',
+    //     message: 'This is a very long message',
+    //     theme: 'darkblue',
+    //     native: true // when using native, your OS will handle theming.
+    // });
+  }
 
 
   // Renderer callback with condition
-const renderer = ({ hours, minutes, seconds, completed }) => {
-   if (completed) {
+  const renderer = ({ hours, minutes, seconds, completed }) => {
+    if (completed) {
       audio.play()
-  
-      return <Timer interval={int}/>
+
+      return <Timer interval={int} />
     } else {
       document.title = `${hours}:${minutes}:${seconds}`
       return <span>{hours}:{minutes}:{seconds}</span>;
     }
   };
 
-  function Timer({interval}){
-    return  <Countdown date={Date.now() + parseInt(interval)} renderer={renderer}
+  function Timer({ interval }) {
+    return <Countdown date={Date.now() + parseInt(interval)} renderer={renderer}
     />
-    
+
   }
 
   useEffect(() => {
@@ -123,7 +121,7 @@ const renderer = ({ hours, minutes, seconds, completed }) => {
           <div
             style={{ background: backDark, padding: ".5em", color: "white" }}
           >
-            <h2>My alarm {loader && <SpinnerRole />}</h2><Notifications/>
+            <h2>My alarm {loader && <SpinnerRole />}</h2>
           </div>
           <div className="divider"></div>
 
@@ -153,24 +151,24 @@ const renderer = ({ hours, minutes, seconds, completed }) => {
                               <h3>{d.title}</h3>
                             </strong>
                           </p>
-                         {
-                            d.puchIn &&  <p>
-                            <strong>
-                              Remaining Time :
-                                  <Timer interval={d.interval}/>
-                            </strong>
-                          </p>
-                         }
+                          {
+                            d.puchIn && <p>
+                              <strong>
+                                Remaining Time :
+                                <Timer interval={d.interval} />
+                              </strong>
+                            </p>
+                          }
                           <div className="mt-3">
                             <button
                               className="btn btn-success"
-                              onClick={(e) => punchInBtn(d.id,d.interval)}
+                              onClick={(e) => punchInBtn(d.id, d.interval)}
                               disabled={d.puchIn}
                             >
                               Punch In
                             </button>
                             {
-                                d.puchIn &&<button
+                              d.puchIn && <button
                                 className="btn mx-3 btn-danger"
                                 onClick={(e) => resetAlarm(d.id)}
                               >
