@@ -209,6 +209,7 @@ function Notebooksidebar(props) {
                     !isEditing && <button
                       style={{
                         border: "none",
+                        marginLeft: "10px"
                       }}
                       onClick={(e) => {
                         const confirmation = window.confirm("Are you sure to delete this file?");
