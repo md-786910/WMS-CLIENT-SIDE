@@ -138,7 +138,6 @@ function Notebooksidebar(props) {
           files?.map((file, index) => {
             const isEditing = editingFile[file._id];
             const fileValue = editingFileValue[file._id];
-            console.log({ fileValue })
 
             return (
               <div className='d-flex justify-content-between align-items-center cursor' style={{
