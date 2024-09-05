@@ -11,6 +11,12 @@ export const orderNotebookFiles = async (payload) => {
     return Axios.patch("/order-notebook-files", payload)
 }
 
+export const updateNotebookFileName = async (fileId, fileName) => {
+    return Axios.patch(`/notebook-files/${fileId}`, {
+        fileName
+    })
+}
+
 export const deleteFilesNameWithContent = async (fileId) => {
     return Axios.delete(`/delete-file/${fileId}`)
 }

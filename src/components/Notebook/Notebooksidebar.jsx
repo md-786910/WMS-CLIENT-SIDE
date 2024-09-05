@@ -1,12 +1,18 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import NotebookModel from '../../model/NotebookModel'
 import { showToastError, showToastSuccess } from '../../utils/action'
-import { createFile, deleteFilesNameWithContent, getAllFile, orderNotebookFiles } from '../../api'
+import { createFile, deleteFilesNameWithContent, getAllFile, orderNotebookFiles, updateNotebookFileName } from '../../api'
 import { RiDeleteBin3Fill } from "react-icons/ri";
 import { GoGrabber } from "react-icons/go";
+import { CiEdit } from "react-icons/ci";
+import { IoMdCheckmark } from "react-icons/io";
 
 
 function Notebooksidebar(props) {
+  const refs = useRef(null)
+  const [editingFile, setEditingFile] = useState({});
+  const [editingFileValue, setEditingFileValue] = useState({});
+
   const [show, setShow] = useState(false)
   const [fileName, setFileName] = useState("")
   const [files, setFiles] = useState([])
@@ -130,6 +136,10 @@ function Notebooksidebar(props) {
         </div>
         {
           files?.map((file, index) => {
+            const isEditing = editingFile[file._id];
+            const fileValue = editingFileValue[file._id];
+            console.log({ fileValue })
+
             return (
               <div className='d-flex justify-content-between align-items-center cursor' style={{
                 padding: '10px',
@@ -145,23 +155,76 @@ function Notebooksidebar(props) {
                   <span>
                     <GoGrabber />
                   </span>
-                  <a href={`/notebook/${file?._id}-${file?.fileName}`} style={{ color: 'blue', fontWeight: "500", fontSize: "17px", textDecoration: "none", textAlign: "start" }}> {file?.fileName?.slice(0, 20)}. </a>
+                  {
+                    isEditing ? <input type='text' value={fileValue} name='text' style={{
+                      width: '90%',
+                      padding: '5px',
+                      border: 'none',
+                      height: '30px',
+                      borderRadius: '5px',
+                    }}
+
+                      onChange={(e) => {
+                        setEditingFileValue({ ...editingFileValue, [file?._id]: e.target.value });
+                      }}
+
+                    /> :
+                      <a href={`/notebook/${file?._id}-${file?.fileName}`} style={{ color: 'blue', fontWeight: "500", fontSize: "14px", textDecoration: "none", textAlign: "start" }}
+
+                      > {file?.fileName?.slice(0, 20)}. </a>
+                  }
+
                 </div>
                 <span>
+
                   <button
                     style={{
                       border: "none",
                     }}
-                    onClick={(e) => {
-                      const confirmation = window.confirm("Are you sure to delete this file?");
-                      if (confirmation) {
-                        deleteFile(file?._id)
+                    onClick={async (e) => {
+                      if (isEditing) {
+                        try {
+                          const resp = await updateNotebookFileName(file._id, editingFileValue[file._id]);
+                          if (resp?.status === 200) {
+                            setEditingFile({ ...editingFile, [file._id]: false });
+                            getFiles();
+                          }
+                        } catch (error) {
+                          showToastError(error)
+                        }
+
+                      } else {
+                        setEditingFileValue({ ...editingFileValue, [file._id]: file?.fileName });
+                        setEditingFile({ ...editingFile, [file._id]: !isEditing });
+
                       }
                     }}
                   >
                     &nbsp;
-                    <RiDeleteBin3Fill color={"red"} size={15} />
+                    {
+                      isEditing ? <IoMdCheckmark color={"green"} size={15} /> : <CiEdit color={"red"} size={15} />
+                    }
                   </button>
+
+                  {
+                    !isEditing && <button
+                      style={{
+                        border: "none",
+                      }}
+                      onClick={(e) => {
+                        const confirmation = window.confirm("Are you sure to delete this file?");
+                        if (confirmation) {
+                          deleteFile(file?._id)
+                        }
+                      }}
+                    >
+                      &nbsp;
+                      <RiDeleteBin3Fill color={"red"} size={15} />
+                    </button>
+                  }
+
+
+
                 </span>
               </div>
             )
