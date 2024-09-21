@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 import HomePage from "./page/HomePage";
 import "./App.css";
 import { AiOutlinePlus } from "react-icons/ai";
@@ -26,6 +26,7 @@ import CodeEditor from "./components/codeEditor";
 function App() {
   const navigate = useNavigate();
   const [size, setSize] = useState(0);
+  const location = useLocation();
   // const [render, setRender] = useState(0);
 
   // Face lock
@@ -84,24 +85,28 @@ function App() {
             path="/test"
             element={<Test />}
           />
+          <Route
+            path="/code-editor"
+            element={<CodeEditor />}
+          />
         </Route>
 
-        <Route
-          path="/code-editor"
-          element={<CodeEditor />}
-        />
+
       </Routes>
 
-      <div className="addIssues">
-        <button
-          className="btn text-white"
-          onClick={() => navigate("/add-issues")}
-          style={{ backgroundColor: "green" }}
-        >
-          Add Issues &nbsp;
-          <AiOutlinePlus />
-        </button>
-      </div>
+      {
+        location.pathname !== "/code-editor" && <div className="addIssues">
+          <button
+            className="btn text-white"
+            onClick={() => navigate("/add-issues")}
+            style={{ backgroundColor: "green" }}
+          >
+            Add Issues &nbsp;
+            <AiOutlinePlus />
+          </button>
+        </div>
+      }
+
       <ToastContainer />
     </>
   );
