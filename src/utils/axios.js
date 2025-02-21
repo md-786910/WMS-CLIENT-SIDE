@@ -4,7 +4,7 @@ import axios from "axios";
 
 const base =
   process.env.NODE_ENV === "production"
-    ? "https://d3ckitf346p739.cloudfront.net"
+    ? "https://wms-1uq0kpc6g-md786910s-projects.vercel.app/"
     : "http://localhost:5000";
 
 const Axios = axios.create({
