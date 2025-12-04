@@ -63,5 +63,8 @@
   },
   "devDependencies": {
     "faker": "^5.5.3"
+  },
+  "engines": {
+    "node": "24.x"
   }
 }
