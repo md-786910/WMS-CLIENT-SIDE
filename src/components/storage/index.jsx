@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { backDark } from "../../utils/color";
 import FileManager from "./model/FileManager";
 import { FcFolder } from "react-icons/fc";
 import FolderModel from "./model/Folder";
@@ -14,6 +13,7 @@ import {
   showToastSuccess,
 } from "../../utils/action";
 import { Link, useLocation } from "react-router-dom";
+import { PageHeader, SkeletonCards, EmptyState } from "../ui/chrome";
 
 function StorageIndex() {
   const location = useLocation();
@@ -22,6 +22,7 @@ function StorageIndex() {
   for (const [key, value] of params) {
     queryStr[key] = value;
   }
+  const inFolder = parseInt(queryStr.stage) === 2;
 
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadStatus, setUploadStatus] = useState("");
@@ -29,33 +30,23 @@ function StorageIndex() {
   const [folderShow, setFolderShow] = useState(false);
   const [folderName, setFolderName] = useState("");
   const [folderArray, setFolderArray] = useState([]);
+  const [loadingFolders, setLoadingFolders] = useState(true);
 
-  const handleOpen = () => {
-    setShow(true);
-  };
-  const handleClose = () => {
-    setShow(false);
-  };
-  const handleOpenFolder = () => {
-    setFolderShow(true);
-  };
-  const handleCloseFolder = () => {
-    setFolderShow(false);
-  };
+  const handleOpen = () => setShow(true);
+  const handleClose = () => setShow(false);
+  const handleOpenFolder = () => setFolderShow(true);
+  const handleCloseFolder = () => setFolderShow(false);
 
-  // handle folder actions
-  const handleChange = (e) => {
-    const value = e.target.value;
-    setFolderName(value);
-  };
+  const handleChange = (e) => setFolderName(e.target.value);
 
   const createFolderNameHandler = async (e) => {
     try {
-      if (!folderName) {
+      if (!folderName.trim()) {
+        showToastError("Enter a folder name");
         return;
       }
       addSpinner(e);
-      const resp = await createFolder(folderName);
+      const resp = await createFolder(folderName.trim());
       if (resp?.status === 201) {
         setFolderName("");
         handleCloseFolder();
@@ -68,7 +59,6 @@ function StorageIndex() {
     }
   };
 
-  // handle files
   const handleFiles = async (files) => {
     setUploadProgress(0);
     if (files.length === 0) {
@@ -82,35 +72,31 @@ function StorageIndex() {
     }
 
     try {
-      const isFolderContain = parseInt(queryStr.stage) === 2 ? true : false;
-      const folderId =
-        parseInt(queryStr.stage) === 2 ? queryStr?.folderId : null;
+      const isFolderContain = inFolder ? true : false;
+      const folderId = inFolder ? queryStr?.folderId : null;
       const response = await Axios.post(
         `/upload-files?isFolderContain=${isFolderContain}&folderId=${folderId}`,
         formData,
         {
           onUploadProgress: (progressEvent) => {
-            if (progressEvent) {
+            if (progressEvent?.total) {
               const progress = Math.round(
                 (progressEvent.loaded * 100) / progressEvent.total
               );
-              // check if we already displayed a toast
               setUploadProgress(progress);
-              setUploadStatus("uploading in progress...");
+              setUploadStatus("Uploading…");
             }
           },
         }
       );
 
       if (response.status === 200) {
-        setUploadStatus("Files uploaded successfully!");
         setUploadProgress(0);
-        setUploadStatus("");
+        setUploadStatus("done");
       } else {
         setUploadStatus("File upload failed.");
       }
     } catch (error) {
-      console.error("Error uploading files:", error);
       setUploadStatus("Error uploading files.");
     }
   };
@@ -125,139 +111,118 @@ function StorageIndex() {
       }
     } catch (error) {
       showToastError(error.message);
+    } finally {
+      setLoadingFolders(false);
     }
   }
   useEffect(() => {
     getFolderArray();
     // eslint-disable-next-line
   }, []);
+
+  const deleteFolder = async (e, folderId) => {
+    const confirm = window.confirm("Delete this folder and its files?");
+    if (!confirm) return;
+    addSpinner(e);
+    try {
+      const resp = await deleteFolderWithFiles(folderId);
+      if (resp?.status === 200) removeSpinner(e, "Delete");
+      await getFolderArray();
+      showToastSuccess("Folder deleted successfully");
+    } catch (error) {
+      showToastError(error);
+      removeSpinner(e, "Delete");
+    }
+  };
+
   return (
-    <section>
-      {uploadProgress > 0 && uploadProgress}
-      {uploadStatus !== "" && (
-        <div className="mb-2">
-          <ProgressBar
-            animated
-            label={`${uploadStatus}`}
-            striped
-            variant={"danger"}
-            min={1}
-            now={uploadProgress}
-            max={100}
-          />
+    <div className="content-stack">
+      <PageHeader
+        breadcrumb={inFolder ? `WMS · Storage · ${queryStr?.folderName || "Folder"}` : "WMS · Storage"}
+        title={inFolder ? (queryStr?.folderName || "Folder") : "Cloud storage"}
+        sub={inFolder ? "Files inside this folder." : `${folderArray.length} folders — organized & searchable.`}
+        right={
+          <>
+            {inFolder && (
+              <button className="btn btn-sm btn-ink" onClick={() => window.history.back()}>
+                ← Back
+              </button>
+            )}
+            {!inFolder && (
+              <button className="btn btn-sm btn-ink" onClick={handleOpenFolder}>
+                + New folder
+              </button>
+            )}
+            <button className="btn btn-sm btn-redis" onClick={handleOpen}>
+              Upload files
+            </button>
+          </>
+        }
+      />
+
+      {uploadStatus !== "" && uploadStatus !== "done" && (
+        <div className="section-card p-3">
+          <div style={{ fontSize: 12, fontWeight: 700, color: "var(--muted)", marginBottom: 6 }}>
+            {uploadStatus} {uploadProgress > 0 && `${uploadProgress}%`}
+          </div>
+          <ProgressBar animated striped variant="danger" min={1} now={uploadProgress} max={100} />
         </div>
       )}
 
-      <div className="companyStatus issResolveCon">
-        <div
-          className="d-flex justify-content-between align-items-center"
-          style={{ background: backDark, padding: ".5em", color: "white" }}
-        >
-          <div className="d-flex align-items-center gap-2">
-            <h2>
-              Storage &nbsp;
-              {parseInt(queryStr.stage) === 2 && (
-                <span className="text-warning bg-black rounded-2 px-2">
-                  {queryStr?.folderName} &nbsp;
-                  <FcFolder />
-                </span>
-              )}
-            </h2>
+      {!inFolder && (
+        <div className="section-card p-3 p-md-4">
+          <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: ".06em", textTransform: "uppercase", color: "var(--faint)", marginBottom: 12 }}>
+            Folders
           </div>
-
-          <div>
-            {parseInt(queryStr.stage) === 2 && (
-              <button
-                className="btn btn-info me-3"
-                onClick={() => {
-                  window.history.back();
-                }}
-              >
-                Back me
-              </button>
-            )}
-            {
-              <button
-                className="btn btn-primary me-3"
-                onClick={handleOpenFolder}
-              >
-                Create folder
-              </button>
-            }
-
-            <button className="btn btn-danger " onClick={handleOpen}>
-              upload files
-            </button>
-          </div>
-        </div>
-        <div className="divider"></div>
-
-        <div className="file-content  d-flex gap-3 flex-wrap">
-          {parseInt(queryStr.stage) !== 2 &&
-            folderArray?.map((folder, index) => {
-              return (
+          {loadingFolders ? (
+            <SkeletonCards n={3} />
+          ) : folderArray?.length === 0 ? (
+            <EmptyState
+              title="No folders yet"
+              sub="Create your first folder to organize uploads."
+              action={<button className="btn btn-sm btn-redis" onClick={handleOpenFolder}>+ New folder</button>}
+            />
+          ) : (
+            <div className="d-flex gap-3 flex-wrap">
+              {folderArray?.map((folder) => (
                 <div
-                  key={index}
+                  key={folder?._id}
                   title={folder?.folderName}
-                  className="border ptr"
-                  style={{
-                    width: "130px",
-                    padding: "5px",
-                  }}
+                  className="card wms-card ptr"
+                  style={{ width: 148, padding: 10, textAlign: "center" }}
                 >
-                  <div>
-                    <Link
-                      to={`/cloud-storage?type=folder&lable=child&stage=2&folderId=${folder?._id}&folderName=${folder?.folderName}`}
-                    >
-                      <FcFolder size={120} />
-                      <span>{folder?.folderName?.slice(0, 13)}</span>
-                    </Link>
-                    <span
-                      className="btn btn-danger btn-sm d-block mt-2"
-                      onClick={async (e) => {
-                        const confirm = window.confirm(
-                          "Are you sure you want to delete"
-                        );
-                        if (!confirm) {
-                          return;
-                        }
-                        addSpinner(e);
-                        // call delete
-                        try {
-                          const resp = await deleteFolderWithFiles(folder?._id);
-                          if (resp?.status === 200) {
-                            removeSpinner(e, "Delete");
-                          }
-                          await getFolderArray();
-                          showToastSuccess("Folder deleted successfully");
-                        } catch (error) {
-                          showToastError(error);
-                          removeSpinner(e, "Delete");
-                        }
-                      }}
-                    >
-                      Delete
-                    </span>
-                  </div>
+                  <Link
+                    to={`/cloud-storage?type=folder&lable=child&stage=2&folderId=${folder?._id}&folderName=${folder?.folderName}`}
+                    style={{ textDecoration: "none", color: "var(--text)" }}
+                  >
+                    <FcFolder size={64} />
+                    <div className="clamp-2 mt-1" style={{ fontSize: 13, fontWeight: 600 }}>
+                      {folder?.folderName}
+                    </div>
+                  </Link>
+                  <button
+                    className="btn btn-sm btn-outline-danger w-100 mt-2"
+                    onClick={(e) => deleteFolder(e, folder?._id)}
+                  >
+                    Delete
+                  </button>
                 </div>
-              );
-            })}
+              ))}
+            </div>
+          )}
         </div>
+      )}
 
-        {/* for folder > files */}
-
-        {parseInt(queryStr.stage) === 2 && (
-          <FileCard
-            folderId={queryStr?.folderId}
-            uploadProgress={uploadStatus}
-          />
-        )}
-
-        {/* files  */}
-        {parseInt(queryStr.stage) === 1 && (
-          <FileCard folderId={null} uploadProgress={uploadStatus} />
-        )}
+      <div className="section-card p-3 p-md-4">
+        <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: ".06em", textTransform: "uppercase", color: "var(--faint)", marginBottom: 12 }}>
+          {inFolder ? "Files in folder" : "Root files"}
+        </div>
+        <FileCard
+          folderId={inFolder ? queryStr?.folderId : null}
+          uploadProgress={uploadStatus}
+        />
       </div>
+
       <FolderModel
         show={folderShow}
         handleClose={handleCloseFolder}
@@ -270,7 +235,7 @@ function StorageIndex() {
         handleClose={handleClose}
         handleFiles={handleFiles}
       />
-    </section>
+    </div>
   );
 }
 

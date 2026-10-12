@@ -1,12 +1,14 @@
 import React from 'react'
 import { Container } from 'react-bootstrap'
 import StorageIndex from '../components/storage'
+import Footer from '../components/Footer'
 
 
 function StoragePage() {
     return (
-        <Container fluid className="p-0" style={{ marginTop: "6em" }}>
+        <Container fluid className="app-fluid">
             <StorageIndex />
+            <Footer />
         </Container>
     )
 }

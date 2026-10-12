@@ -8,21 +8,17 @@ import {
 } from "../../utils/action";
 import { deleteFilesDocs, getFileMultiple } from "../../api";
 import ShowFileModel from "./model/ShowFileModel";
-import { FaTrash, FaEllipsisV, FaFolder } from "react-icons/fa";
+import { SkeletonCards, EmptyState } from "../ui/chrome";
 import "./storage.css";
 
 function FileCard({ folderId = null, uploadProgress }) {
-  // const {  } = props;
   const [files, setFiles] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [singleFile, setSingleFile] = useState(null);
   const [show, setShow] = useState(false);
 
-  const handleOpen = () => {
-    setShow(true);
-  };
-  const handleClose = () => {
-    setShow(false);
-  };
+  const handleOpen = () => setShow(true);
+  const handleClose = () => setShow(false);
 
   async function getMultipleFileSystem() {
     try {
@@ -34,61 +30,61 @@ function FileCard({ folderId = null, uploadProgress }) {
       }
     } catch (error) {
       showToastError(error.message);
+    } finally {
+      setLoading(false);
     }
   }
   useEffect(() => {
     getMultipleFileSystem();
     // eslint-disable-next-line
-  }, [uploadProgress]);
+  }, [uploadProgress, folderId]);
+
+  const deleteFile = async (e, fileId) => {
+    e.stopPropagation();
+    const confirm = window.confirm("Delete this file?");
+    if (!confirm) return;
+    addSpinner(e);
+    try {
+      const resp = await deleteFilesDocs(fileId);
+      if (resp?.status === 200) removeSpinner(e, "Delete");
+      await getMultipleFileSystem();
+      showToastSuccess("File deleted successfully");
+    } catch (error) {
+      showToastError(error);
+      removeSpinner(e, "Delete");
+    }
+  };
+
+  if (loading) return <SkeletonCards n={3} />;
+  if (!files?.length)
+    return <EmptyState title="No files here" sub="Upload files to see them in this view." />;
+
   return (
-    <div className="file-content  d-flex mt-5 gap-3 flex-wrap">
+    <div className="d-flex gap-3 flex-wrap">
       {files?.map((file, index) => {
         return (
           <div
-            key={index}
+            key={file?._id || index}
             title={file?.fileName}
-            className="border ptr"
-            style={{
-              width: "130px",
-              padding: "5px",
-            }}
+            className="card wms-card ptr"
+            style={{ width: 148, padding: 10, textAlign: "center" }}
             onClick={() => {
               setSingleFile(file);
               handleOpen();
             }}
           >
-            <div>
+            <div className="d-flex justify-content-center">
               {mapExtTofile(file?.fileName?.split(".")[1])}
-              <span>{file?.fileName?.slice(0, 13)}</span>
-              <span
-                className="btn btn-danger btn-sm d-block mt-2"
-                onClick={async (e) => {
-                  e.stopPropagation();
-
-                  const confirm = window.confirm(
-                    "Are you sure you want to delete"
-                  );
-                  if (!confirm) {
-                    return;
-                  }
-                  addSpinner(e);
-                  // call delete
-                  try {
-                    const resp = await deleteFilesDocs(file?._id);
-                    if (resp?.status === 200) {
-                      removeSpinner(e, "Delete");
-                    }
-                    await getMultipleFileSystem();
-                    showToastSuccess("File deleted successfully");
-                  } catch (error) {
-                    showToastError(error);
-                    removeSpinner(e, "Delete");
-                  }
-                }}
-              >
-                Delete
-              </span>
             </div>
+            <div className="clamp-2 mt-1" style={{ fontSize: 12, fontWeight: 600, wordBreak: "break-word" }}>
+              {file?.fileName}
+            </div>
+            <button
+              className="btn btn-sm btn-outline-danger w-100 mt-2"
+              onClick={(e) => deleteFile(e, file?._id)}
+            >
+              Delete
+            </button>
           </div>
         );
       })}
