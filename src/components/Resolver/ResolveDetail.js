@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { backDark } from "../../utils/color";
-import { SpinnerRole, showToastError } from "../../utils/action";
+import { showToastError } from "../../utils/action";
 
 import Axios from "../../utils/axios";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
+import { PageHeader, SkeletonCards } from "../ui/chrome";
+
 function ResolveDetail() {
   const { id } = useParams();
   const [spinner, setSpinner] = useState(true);
+  const [data, setData] = useState(null);
 
-  const [data, setData] = useState([]);
-
-  // fetch task
   const fetchIssues = async () => {
     try {
       const resp = await Axios.post("/getIssuesById", { id: id });
@@ -26,35 +25,38 @@ function ResolveDetail() {
       setSpinner(false);
     }
   };
+
   useEffect(() => {
     fetchIssues();
     // eslint-disable-next-line
   }, [id]);
 
   return (
-    <>
-      <section>
-        <div className="companyStatus issResolveCon">
-          <div
-            style={{ background: backDark, padding: ".5em", color: "white" }}
-          >
-            <h2>Read issues {spinner && <SpinnerRole />}</h2>
-          </div>
-          <div className="divider"></div>
+    <div className="content-stack">
+      <PageHeader
+        breadcrumb="WMS · Resolve · Reader"
+        title={spinner ? "Reading…" : data?.title || "Issue"}
+        sub="Clean reading view — max width for focus."
+        right={
+          <>
+            <Link to="/resolve" className="btn btn-sm btn-ink">← Back</Link>
+            {data?._id && (
+              <Link to={`/add-issues/${data._id}/`} className="btn btn-sm btn-redis">Edit</Link>
+            )}
+          </>
+        }
+      />
 
-          <div class="card">
-            <div class="card-header ">
-              <strong>{data?.title}</strong>
-            </div>
-
-            <div
-              class="card-body"
-              dangerouslySetInnerHTML={{ __html: data?.content }}
-            />
-          </div>
+      {spinner ? (
+        <div className="section-card p-3 p-md-4"><SkeletonCards n={1} /></div>
+      ) : (
+        <div className="section-card p-3 p-md-4">
+          <article style={{ maxWidth: "72ch", margin: "0 auto", fontSize: 15, lineHeight: 1.7 }}>
+            <div dangerouslySetInnerHTML={{ __html: data?.content }} />
+          </article>
         </div>
-      </section>
-    </>
+      )}
+    </div>
   );
 }
 

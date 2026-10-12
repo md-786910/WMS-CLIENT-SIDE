@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { Link, useParams } from "react-router-dom";
 import NotebookModel from "../../model/NotebookModel";
 import { showToastError, showToastSuccess } from "../../utils/action";
 import {
@@ -14,6 +15,8 @@ import { CiEdit } from "react-icons/ci";
 import { IoMdCheckmark } from "react-icons/io";
 
 function Notebooksidebar(props) {
+  const { fileName: activeParam } = useParams();
+  const activeId = activeParam?.split("-")[0];
   const refs = useRef(null);
   const [editingFile, setEditingFile] = useState({});
   const [editingFileValue, setEditingFileValue] = useState({});
@@ -131,37 +134,36 @@ function Notebooksidebar(props) {
   return (
     <>
       <div
+        className="section-card"
         style={{
-          backgroundColor: "whitesmoke",
-          width: "16%",
-          height: "100vh",
-          position: "fixed",
+          height: "calc(100vh - 140px)",
+          position: "sticky",
+          top: "calc(var(--header-h) + 20px)",
           overflow: "auto",
-          paddingBottom: "5rem",
+          paddingBottom: "1rem",
         }}
       >
-        <div className="p-2 position-fixed">
+        <div className="p-2" style={{ position: "sticky", top: 0, background: "#fff", zIndex: 2, borderBottom: "1px solid var(--border)" }}>
           <button
-            className="btn btn-primary rounded-0 "
-            style={{
-              width: "223px",
-            }}
+            className="btn btn-redis btn-sm w-100"
             onClick={() => handleOpen()}
           >
-            Create New file
+            + New note
           </button>
         </div>
-        <div className="mt-5">
+        <div>
           {files?.map((file, index) => {
             const isEditing = editingFile[file._id];
             const fileValue = editingFileValue[file._id];
 
             return (
               <div
-                className="d-flex justify-content-between align-items-center cursor"
+                className="d-flex justify-content-between align-items-center cursor gap-1"
                 style={{
-                  padding: "10px",
-                  borderBottom: "1px solid #ddd",
+                  padding: "8px 10px",
+                  borderBottom: "1px solid var(--border)",
+                  borderLeft: activeId === file._id ? "3px solid var(--redis-red)" : "3px solid transparent",
+                  background: activeId === file._id ? "var(--redis-red-soft)" : "transparent",
                 }}
                 key={file._id}
                 draggable="true"
@@ -169,9 +171,9 @@ function Notebooksidebar(props) {
                 onDragOver={(e) => handleDragOver(e)}
                 onDrop={(e) => handleDrop(e, file)}
               >
-                <div>
-                  <span>
-                    <GoGrabber />
+                <div className="d-flex align-items-center gap-1" style={{ minWidth: 0, flex: 1 }}>
+                  <span style={{ color: "var(--faint)", flexShrink: 0 }}>
+                    <GoGrabber size={13} />
                   </span>
                   {isEditing ? (
                     <input
@@ -193,25 +195,30 @@ function Notebooksidebar(props) {
                       }}
                     />
                   ) : (
-                    <a
-                      href={`/notebook/${file?._id}-${file?.fileName}`}
+                    <Link
+                      to={`/notebook/${file?._id}-${file?.fileName}`}
+                      title={file?.fileName}
                       style={{
-                        color: "blue",
-                        fontWeight: "500",
-                        fontSize: "14px",
+                        color: "var(--text)",
+                        fontWeight: "600",
+                        fontSize: "12px",
                         textDecoration: "none",
-                        textAlign: "start",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        maxWidth: 110,
                       }}
                     >
-                      {" "}
-                      {file?.fileName?.slice(0, 20)}.{" "}
-                    </a>
+                      {file?.fileName?.slice(0, 16)}
+                    </Link>
                   )}
                 </div>
-                <span>
+                <span className="d-flex align-items-center" style={{ flexShrink: 0 }}>
                   <button
                     style={{
                       border: "none",
+                      background: "transparent",
+                      padding: 2,
                     }}
                     onClick={async (e) => {
                       if (isEditing) {
@@ -242,11 +249,10 @@ function Notebooksidebar(props) {
                       }
                     }}
                   >
-                    &nbsp;
                     {isEditing ? (
-                      <IoMdCheckmark color={"green"} size={15} />
+                      <IoMdCheckmark color={"green"} size={14} />
                     ) : (
-                      <CiEdit color={"red"} size={15} />
+                      <CiEdit color={"red"} size={14} />
                     )}
                   </button>
 
@@ -254,7 +260,9 @@ function Notebooksidebar(props) {
                     <button
                       style={{
                         border: "none",
-                        marginLeft: "10px",
+                        background: "transparent",
+                        padding: 2,
+                        marginLeft: "4px",
                       }}
                       onClick={(e) => {
                         const confirmation = window.confirm(
@@ -265,8 +273,7 @@ function Notebooksidebar(props) {
                         }
                       }}
                     >
-                      &nbsp;
-                      <RiDeleteBin3Fill color={"red"} size={15} />
+                      <RiDeleteBin3Fill color={"red"} size={14} />
                     </button>
                   )}
                 </span>

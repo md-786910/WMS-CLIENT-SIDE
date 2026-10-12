@@ -59,6 +59,7 @@ function App() {
         <Header len={size} />
       )}
 
+      <main className="app-main">
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route exact element={<Protected />}>
@@ -93,13 +94,13 @@ function App() {
 
 
       </Routes>
+      </main>
 
       {
-        location.pathname !== "/code-editor" && <div className="addIssues">
+        location.pathname !== "/code-editor" && <div className="addIssues redis-fab">
           <button
-            className="btn text-white"
+            className="btn btn-redis"
             onClick={() => navigate("/add-issues")}
-            style={{ backgroundColor: "green" }}
           >
             Add Issues &nbsp;
             <AiOutlinePlus />

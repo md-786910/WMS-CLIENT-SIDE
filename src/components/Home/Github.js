@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Col, Row } from "react-bootstrap";
-import { backDark } from "../../utils/color";
 import { SpinnerRole, showToastError } from "../../utils/action";
 import axios from "axios";
+import { Section } from "../ui/chrome";
 
 function Github() {
     const [spinner, setSpinner] = useState(true);
     const [data, setData] = useState([])
     const url = "https://api.github.com/users/md-786910/repos";
 
-    // fetch task
     const getGithub = async () => {
         try {
             const resp = await axios.get(url);
@@ -24,88 +23,45 @@ function Github() {
         } finally {
             setSpinner(false)
         }
-
     }
 
     useEffect(() => {
         getGithub();
-        // eslint-disable-next-line 
+        // eslint-disable-next-line
     }, [])
 
-
-
     return (
-        <section>
-            <div className="companyStatus">
-                <div style={{ background: backDark, padding: ".5em", color: "white" }}>
-                    <h2>
-                        Github {
-                            spinner && <SpinnerRole />
-                        }
-                    </h2>
-                </div>
-                <div className="divider"></div>
-
-                <div className="companyBox">
-                    <Row>
-                        {
-                            data?.slice(0, 5).map((d, index) => {
-                                return (
-                                    <Col lg={12} key={index} className="mb-4">
-                                        <div class="card">
-                                            <div class="card-header d-flex align-items-center justify-content-between">
-
-                                                <div className="leftBox">
-                                                    <strong><h4># {index + 1}</h4></strong>
-                                                </div>
-                                                <div className="rightBox">
-                                                    <div class="dropdown">
-                                                        <a href={d.html_url} target="_blank" rel="noreferrer" >
-                                                            <button class="btn btn-info " type="button" >
-                                                                open
-                                                            </button>
-                                                        </a>
-                                                    </div>
-
-                                                </div>
-
-                                            </div>
-                                            <div class="card-body">
-                                                <h5 class="card-title">
-                                                    <strong>Title :  </strong>
-                                                    {d.name}
-                                                </h5>
-                                                <p class="card-text">
-                                                    {
-                                                        d.description && <>
-                                                            <strong>Description : </strong>
-                                                            {d.description}
-                                                        </>
-                                                    }
-                                                </p>
-
-
-                                            </div>
-                                        </div>
-                                    </Col>
-                                )
-                            })
-                        }
-
-                        <div className="mt-3">
-                            <a href="https://github.com/md-786910" target="_blank" rel="noreferrer">
-                                <button className="btn" style={{ background: backDark, color: "white" }}>
-                                    Github profile
-                                </button>
-                            </a>
+        <Section
+            title="GitHub"
+            sub="Recent repositories."
+            action={spinner ? <SpinnerRole /> : (
+                <a href="https://github.com/md-786910" target="_blank" rel="noreferrer" className="btn btn-sm btn-ink">
+                    Profile
+                </a>
+            )}
+        >
+            <Row>
+                {data?.slice(0, 5).map((d, index) => (
+                    <Col lg={6} key={d.id || index} className="mb-3">
+                        <div className="card wms-card h-100">
+                            <div className="card-body">
+                                <div className="d-flex align-items-start justify-content-between gap-2">
+                                    <strong className="clamp-2" style={{ fontSize: 14 }}>{d.name}</strong>
+                                    <a href={d.html_url} target="_blank" rel="noreferrer" className="btn btn-sm btn-outline-dark flex-shrink-0">
+                                        Open
+                                    </a>
+                                </div>
+                                {d.description && (
+                                    <p className="clamp-2 mt-2 mb-0" style={{ fontSize: 13, color: "var(--muted)" }}>
+                                        {d.description}
+                                    </p>
+                                )}
+                            </div>
                         </div>
-                    </Row>
-                </div>
-
-            </div>
-
-
-        </section>
+                    </Col>
+                ))}
+            </Row>
+        </Section>
     );
 }
 

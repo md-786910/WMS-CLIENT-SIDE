@@ -1,6 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Editor } from "@tinymce/tinymce-react";
-import { backDark } from "../../utils/color";
 import {
   addSpinner,
   removeSpinner,
@@ -10,44 +8,45 @@ import {
 import { Col, Row } from "react-bootstrap";
 import Axios from "../../utils/axios";
 import { useLocation } from "react-router-dom";
+import { PageHeader, SkeletonCards, EmptyState } from "../ui/chrome";
+
+function isUrl(s) {
+  try { const u = new URL(s); return u.protocol.startsWith("http"); } catch { return false; }
+}
 
 function Task(props) {
   const location = useLocation();
   const cardRef = useRef(null)
   const [title, setTitle] = useState("");
   const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const renderCount = parseInt(location.search?.slice(6))
-  const [cardNo, setCardNo] = useState(renderCount)
+  const [cardNo] = useState(renderCount)
 
-  // add task
   const addTask = async (e) => {
     addSpinner(e);
-    if (title) {
+    if (title.trim()) {
       try {
-        const resp = await Axios.post("/addTask", {
-          title: title,
-        });
+        const resp = await Axios.post("/addTask", { title: title.trim() });
         if (resp.data.success) {
           showToastSuccess(resp.data.message);
-          // handleSize(Math.random());
         } else {
           showToastError(resp.data.message);
         }
       } catch (error) {
         showToastError("Task added failed");
       } finally {
-        removeSpinner(e, "Add Task");
+        removeSpinner(e, "Add task");
         getTask();
       }
     } else {
       showToastError("please add note!");
-      removeSpinner(e, "Add Task");
+      removeSpinner(e, "Add task");
     }
     setTitle("");
   };
 
-  // fetch task
   const getTask = async () => {
     try {
       const resp = await Axios.get("/getTask");
@@ -59,23 +58,23 @@ function Task(props) {
       }
     } catch (error) {
       showToastError(error.message);
+    } finally {
+      setLoading(false);
     }
   };
-  // delete task
   const deleteTask = async (e, id) => {
     addSpinner(e);
     try {
       const resp = await Axios.post("/removeTask", { id: id });
       if (resp.data.success) {
         showToastSuccess(resp.data.message);
-        // handleSize(Math.random());
       } else {
         showToastError(resp.data.message);
       }
     } catch (error) {
-      showToastError("Task added failed");
+      showToastError("Delete failed");
     } finally {
-      removeSpinner(e, "Add Task");
+      removeSpinner(e, "Remove");
       getTask();
     }
   };
@@ -85,96 +84,74 @@ function Task(props) {
     // eslint-disable-next-line
   }, [cardRef]);
 
-  // useEffect(() => {
-  //   setCardNo(cardLocation)
-  // }, [cardLocation])
   useEffect(() => {
     if (cardRef.current) {
-      const cardElement = cardRef.current;
-      const cardToScrollTo = cardElement.children[cardNo - 1];
+      const cardToScrollTo = cardRef.current.children[cardNo - 1];
       if (cardToScrollTo) {
         setTimeout(() => {
-          const offsetTop = cardToScrollTo.offsetTop;
-          window.scrollTo(0, offsetTop);
-        }, 10);
-
+          cardToScrollTo.scrollIntoView({ behavior: "smooth", block: "center" });
+        }, 50);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [renderCount, cardRef, location.search]);
+  }, [renderCount, location.search]);
 
   return (
-    <>
-      <section>
-        <div className="companyStatus issResolveCon">
-          <div
-            style={{ background: backDark, padding: ".5em", color: "white" }}
-          >
-            <h2>My task</h2>
-          </div>
-          <div className="divider"></div>
+    <div className="content-stack">
+      <PageHeader
+        breadcrumb="WMS · Tasks"
+        title="My tasks"
+        sub={loading ? "Loading…" : `${data.length} total — quick capture, link-aware.`}
+        right={<span className="pill pill-neutral">{loading ? "…" : data.length}</span>}
+      />
 
-          <div class="card">
-            <div class="card-header ">
-              <div>
-                <label for="exampleFormControlInput1" class="form-label">
-                  <strong>Add task</strong>
-                </label>
-                <input
-                  type="email"
-                  class="form-control w-100"
-                  id="exampleFormControlInput1"
-                  placeholder="task.."
-                  name="title"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                />
-                <button
-                  className="btn border mt-3"
-                  style={{ backgroundColor: backDark, color: "white" }}
-                  onClick={(e) => addTask(e)}
-                >
-                  Add task
-                </button>
-              </div>
-            </div>
+      <div className="section-card p-3 p-md-4">
+        <div className="d-flex gap-2" style={{ maxWidth: 640 }}>
+          <input
+            type="text"
+            className="form-control"
+            placeholder="Add task… paste a link or type a note, Enter to save"
+            name="title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            onKeyDown={(e) => { if (e.key === "Enter") addTask(e); }}
+          />
+          <button className="btn btn-redis flex-shrink-0" onClick={(e) => addTask(e)}>
+            Add task
+          </button>
+        </div>
 
-            <Row
-              ref={(el) => { cardRef.current = el }}
-
-            >
+        <div className="mt-4">
+          {loading ? (
+            <SkeletonCards n={3} />
+          ) : data?.length === 0 ? (
+            <EmptyState title="No tasks yet" sub="Capture your first task above — it takes seconds." />
+          ) : (
+            <Row className="g-3" ref={(el) => { cardRef.current = el }}>
               {data?.map((d, index) => {
+                const url = isUrl(d?.title);
+                const hl = cardNo === index + 1;
                 return (
-                  <Col col={12} lg={4} md={4} sm={6} key={index}>
-                    <div
-                      class="card-body"
-
-                    >
-                      <div style={{
-                        height: "12rem",
-                        border: cardNo === index + 1 ? "5px solid blue" : "1px solid gray"
-                      }}
-                      >
-                        <div class="card-header">
-                          <h5>#Task - {index + 1}</h5>
+                  <Col md={6} xl={4} key={d._id || index}>
+                    <div className="card wms-card h-100" style={hl ? { borderColor: "var(--redis-red)", boxShadow: "var(--shadow-md)" } : undefined}>
+                      <div className="card-body d-flex flex-column">
+                        <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: ".06em", textTransform: "uppercase", color: "var(--faint)" }}>
+                          Task #{index + 1}{hl ? " · highlighted" : ""}
                         </div>
-                        <div class="card-body ">
-                          <a
-                            href={d?.title}
-                            rel="noreferrer"
-                            target="_blank"
-                            class="card-title"
-                          >
-                            {d?.title?.slice(0, 39)}
-                          </a>
-                          <div className="mt-2">
-                            <button
-                              className="btn btn-danger"
-                              onClick={(e) => deleteTask(e, d._id)}
-                            >
-                              remove
-                            </button>
-                          </div>
+                        <div className="mt-1 clamp-2" style={{ fontSize: 14, fontWeight: 600, lineHeight: 1.45, wordBreak: "break-word" }}>
+                          {url ? (
+                            <a href={d?.title} rel="noreferrer" target="_blank">{d?.title}</a>
+                          ) : (
+                            d?.title
+                          )}
+                        </div>
+                        <div className="mt-auto pt-3 d-flex gap-2">
+                          {url && (
+                            <a href={d?.title} rel="noreferrer" target="_blank" className="btn btn-sm btn-ink">Open link</a>
+                          )}
+                          <button className="btn btn-sm btn-outline-danger ms-auto" onClick={(e) => deleteTask(e, d._id)}>
+                            Remove
+                          </button>
                         </div>
                       </div>
                     </div>
@@ -182,10 +159,10 @@ function Task(props) {
                 );
               })}
             </Row>
-          </div>
+          )}
         </div>
-      </section >
-    </>
+      </div>
+    </div>
   );
 }
 

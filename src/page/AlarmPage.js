@@ -1,13 +1,14 @@
 import React from 'react'
 import { Container } from "react-bootstrap";
 import Alarm from '../components/Alarm/Alarm';
+import Footer from '../components/Footer';
 
 function AlarmPage() {
     return (
-        <Container fluid className="p-0" style={{ marginTop: "6em" }}>
+        <Container fluid className="app-fluid">
             <Alarm />
+            <Footer />
         </Container>
-
     )
 }
 

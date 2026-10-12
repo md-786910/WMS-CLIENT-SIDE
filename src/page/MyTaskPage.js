@@ -1,13 +1,14 @@
 import React from 'react'
 import { Container } from "react-bootstrap";
 import Task from '../components/Task/Task';
+import Footer from '../components/Footer';
 
 function MyTaskPage({ handleSize }) {
     return (
-        <Container fluid className="p-0" style={{ marginTop: "6em" }}>
+        <Container fluid className="app-fluid">
             <Task handleSize={handleSize} />
+            <Footer />
         </Container>
-
     )
 }
 

@@ -130,27 +130,34 @@ function CodeEditor() {
   }, [localstorageData]);
   return (
     <div
-      className="p-0"
+      className="p-0 d-flex flex-column"
       style={{
-        marginTop: "4.4em",
+        marginTop: 0,
         position: "relative",
         background: "#1e1e1e",
-        overflowY: "hidden",
+        height: "calc(100vh - var(--header-h) - 20px)",
+        minHeight: 480,
+        overflow: "hidden",
+        borderRadius: 12,
       }}
     >
-      <div className="d-flex" title="Settings">
+      <div className="d-flex align-items-center justify-content-between px-3 pt-2" title="Settings">
+        <span style={{ color: "rgba(255,255,255,.55)", fontSize: 12, fontWeight: 700, letterSpacing: ".06em", textTransform: "uppercase" }}>
+          Code Editor · Ctrl+Enter to run
+        </span>
         <Button
           onClick={() => setShowSettingsModal(true)}
-          className="btn btn-sm btn-dark mt-3"
+          className="btn btn-sm btn-dark"
         >
           <AiOutlineSetting />
         </Button>
       </div>
-      <Row>
-        <Col lg={8} md={8} sm={12}>
+      <Row className="g-0 flex-grow-1 mt-2" style={{ minHeight: 0 }}>
+        <Col lg={8} md={8} sm={12} className="d-flex flex-column" style={{ minHeight: 0 }}>
+          <div style={{ flex: 1, minHeight: 0, overflow: "auto" }}>
           <CodeMirror
             value={value}
-            height="600px"
+            height="100%"
             theme={theme}
             extensions={[
               javascript(),
@@ -169,13 +176,15 @@ function CodeEditor() {
             editable={!isLoading}
             ref={editorRef}
           />
+          </div>
         </Col>
-        <Col lg={4} md={4} sm={12}>
-          <div style={{ marginRight: "10px" }}>
-            <div className="d-flex my-3 align-items-center justify-content-between text-warning">
-              <h3>Output</h3>
+        <Col lg={4} md={4} sm={12} className="d-flex flex-column" style={{ minHeight: 0 }}>
+          <div className="d-flex flex-column h-100" style={{ marginRight: "10px", marginLeft: "10px", minHeight: 0 }}>
+            <div className="d-flex my-2 align-items-center justify-content-between text-warning">
+              <h3 className="m-0" style={{ fontSize: 16 }}>Output</h3>
               <Button
                 variant="success"
+                size="sm"
                 onClick={executeCode}
                 disabled={isLoading}
               >
@@ -195,15 +204,18 @@ function CodeEditor() {
                 )}
               </Button>
             </div>
-            {error && <Alert variant="danger">{error}</Alert>}
+            {error && <Alert variant="danger" className="py-2 mb-2">{error}</Alert>}
             <pre
               style={{
                 backgroundColor: "#1e1e1e",
                 color: "yellow",
                 padding: "1em",
                 borderRadius: "4px",
-                minHeight: "500px",
+                flex: 1,
+                minHeight: 0,
                 overflow: "auto",
+                marginBottom: 10,
+                border: "1px solid rgba(255,255,255,.12)",
               }}
             >
               {output || "No output"}

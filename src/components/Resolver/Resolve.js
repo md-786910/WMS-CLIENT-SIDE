@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { backDark } from "../../utils/color";
 import {
-  SpinnerRole,
   addSpinner,
   removeSpinner,
   showToastError,
@@ -11,15 +9,44 @@ import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
 import { Col, Row } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { BsCheckCircleFill } from "react-icons/bs";
-import { TiDelete } from "react-icons/ti";
-import { FaEdit } from "react-icons/fa";
 
 import Axios from "../../utils/axios";
+import { PageHeader, StatusBadge, SkeletonCards, EmptyState } from "../ui/chrome";
+
+function stripHtml(html) {
+  const div = document.createElement("div");
+  div.innerHTML = html || "";
+  return (div.textContent || div.innerText || "").trim();
+}
+
+function IssueCard({ d, footer }) {
+  const preview = stripHtml(d.content).slice(0, 140);
+  return (
+    <div className="card wms-card h-100">
+      <div className="card-header d-flex align-items-start justify-content-between gap-2">
+        <div style={{ minWidth: 0 }}>
+          <div style={{ fontSize: 14, fontWeight: 700, lineHeight: 1.4 }} className="clamp-2">
+            {d.title}
+          </div>
+        </div>
+        <StatusBadge status={d.isResolved ? "Resolved" : "Pending"} />
+      </div>
+      <div className="card-body d-flex flex-column">
+        {preview && (
+          <p className="clamp-2" style={{ fontSize: 13, color: "var(--muted)", marginBottom: 12 }}>
+            {preview}{preview.length >= 140 ? "…" : ""}
+          </p>
+        )}
+        <div className="mt-auto">{footer}</div>
+      </div>
+    </div>
+  );
+}
+
 function Resolve() {
   const [spinner, setSpinner] = useState(true);
   const [data, setData] = useState([]);
-  // add task
+
   const resolvedIssues = async (e, id) => {
     addSpinner(e);
     try {
@@ -30,14 +57,13 @@ function Resolve() {
         showToastError(resp.data.message);
       }
     } catch (error) {
-      showToastError("Task added failed");
+      showToastError("Restore failed");
     } finally {
-      removeSpinner(e, "Resolve ❌");
+      removeSpinner(e, "Restore");
       fetchIssues();
     }
   };
 
-  // fetch task
   const fetchIssues = async () => {
     try {
       const resp = await Axios.get("/getIssues");
@@ -53,7 +79,7 @@ function Resolve() {
       setSpinner(false);
     }
   };
-  // delete task
+
   const deleteIssues = async (e, id) => {
     addSpinner(e);
     try {
@@ -64,14 +90,13 @@ function Resolve() {
         showToastError(resp.data.message);
       }
     } catch (error) {
-      showToastError("Task added failed");
+      showToastError("Delete failed");
     } finally {
       removeSpinner(e, "Remove");
       fetchIssues();
     }
   };
 
-  // delete permanent  task
   const deletePermanentTask = async (e, id) => {
     addSpinner(e);
     try {
@@ -82,7 +107,7 @@ function Resolve() {
         showToastError(resp.data.message);
       }
     } catch (error) {
-      showToastError("Task added failed");
+      showToastError("Delete failed");
     } finally {
       removeSpinner(e, "Remove");
       fetchIssues();
@@ -94,161 +119,84 @@ function Resolve() {
     // eslint-disable-next-line
   }, []);
 
+  const active = data?.filter((d) => !d.isDeleted) || [];
+  const trashed = data?.filter((d) => d.isDeleted) || [];
+
   return (
-    <>
-      <section>
-        <div className="companyStatus issResolveCon">
-          <div
-            style={{ background: backDark, padding: ".5em", color: "white" }}
-          >
-            <h2>Your resolver {spinner && <SpinnerRole />}</h2>
-          </div>
-          <div className="divider"></div>
+    <div className="content-stack">
+      <PageHeader
+        breadcrumb="WMS · Resolve"
+        title="Resolver"
+        sub={spinner ? "Loading…" : `${active.length} active · ${trashed.length} in trash`}
+        right={
+          <Link to="/add-issues" className="btn btn-sm btn-redis">
+            + New issue
+          </Link>
+        }
+      />
 
-          <div class="card">
-            <div class="card-body">
-              <Tabs
-                defaultActiveKey="home"
-                id="justify-tab-example"
-                className="mb-3"
-                justify
-              >
-                <Tab eventKey="home" title={`Resolve issues`}>
-                  <Row>
-                    {data?.map((d, index) => {
-                      return (
-                        !d.isDeleted && (
-                          <Col lg={4} className="mb-4" key={index}>
-                            <div
-                              class="card"
-                              style={{
-                                height: "15rem",
-                              }}
-                            >
-                              <div class="card-body">
-                                <h5 class="card-title">
-                                  <strong>{d.title}</strong>
-                                </h5>
-                                <p
-                                  class="card-text"
-                                  dangerouslySetInnerHTML={{
-                                    __html: d.content.substr(0, 100),
-                                  }}
-                                ></p>
-                                <div className="d-flex gap-4 position-absolute bottom-0 pb-2">
-                                  <button
-                                    style={{
-                                      border: "none",
-                                    }}
-                                  >
-                                    <Link to={`/resolve/${d._id}`} class="btn">
-                                      Read &nbsp;
-                                      <BsCheckCircleFill
-                                        color={"green"}
-                                        size={18}
-                                      />
-                                    </Link>
-                                  </button>
-                                  <button
-                                    style={{
-                                      border: "none",
-                                    }}
-                                  >
-                                    <Link
-                                      to={`/add-issues/${d?._id}/`}
-                                      class="btn"
-                                    >
-                                      Edit &nbsp;
-                                      <FaEdit color={"blue"} size={18} />
-                                    </Link>
-                                  </button>
-                                  <button
-                                    style={{
-                                      border: "none",
-                                    }}
-                                    onClick={(e) => deleteIssues(e, d._id)}
-                                  >
-                                    <Link to="#" class="btn">
-                                      Delete &nbsp;
-                                      <TiDelete color={"red"} size={27} />
-                                    </Link>
-                                  </button>
-                                </div>
-                              </div>
-                            </div>
-                          </Col>
-                        )
-                      );
-                    })}
-                  </Row>
-                </Tab>
-                <Tab eventKey="profile" title="Trash">
-                  <Row>
-                    {data?.map((d, index) => {
-                      return (
-                        d.isDeleted && (
-                          <Col lg={4} className="mb-4" key={index}>
-                            <div
-                              class="card"
-                              style={{
-                                height: "15rem",
-                              }}
-                            >
-                              <div class="card-body">
-                                <h5 class="card-title">
-                                  <strong>{d.title}</strong>
-                                </h5>
-
-                                <p
-                                  class="card-text"
-                                  dangerouslySetInnerHTML={{
-                                    __html: d.content.substr(0, 100),
-                                  }}
-                                ></p>
-
-                                <div className="d-flex gap-4 position-absolute bottom-0 pb-2">
-                                  <button
-                                    style={{
-                                      border: "none",
-                                    }}
-                                    onClick={(e) => resolvedIssues(e, d._id)}
-                                  >
-                                    <Link to="#" class="btn">
-                                      Backup now &nbsp;
-                                      <BsCheckCircleFill
-                                        color={"green"}
-                                        size={18}
-                                      />
-                                    </Link>
-                                  </button>
-
-                                  <button
-                                    style={{
-                                      border: "none",
-                                    }}
-                                    onClick={(e) => deletePermanentTask(e, d._id)}
-                                  >
-                                    <Link to="#" class="btn">
-                                      Ignore &nbsp;
-                                      <TiDelete color={"red"} size={27} />
-                                    </Link>
-                                  </button>
-                                </div>
-
-                              </div>
-                            </div>
-                          </Col>
-                        )
-                      );
-                    })}
-                  </Row>
-                </Tab>
-              </Tabs>
-            </div>
-          </div>
-        </div>
-      </section>
-    </>
+      <div className="section-card p-3 p-md-4">
+        {spinner ? (
+          <SkeletonCards n={3} />
+        ) : (
+          <Tabs defaultActiveKey="home" id="resolve-tabs" className="mb-3" justify>
+            <Tab eventKey="home" title={`Active (${active.length})`}>
+              {active.length === 0 ? (
+                <EmptyState
+                  title="No active issues"
+                  sub="All clear — create a new issue to get started."
+                  action={<Link to="/add-issues" className="btn btn-sm btn-redis">+ New issue</Link>}
+                />
+              ) : (
+                <Row className="g-3 mt-1">
+                  {active.map((d) => (
+                    <Col md={6} xl={4} key={d._id}>
+                      <IssueCard
+                        d={d}
+                        footer={
+                          <div className="d-flex gap-2">
+                            <Link to={`/resolve/${d._id}`} className="btn btn-sm btn-ink">Read</Link>
+                            <Link to={`/add-issues/${d?._id}/`} className="btn btn-sm btn-outline-dark">Edit</Link>
+                            <button className="btn btn-sm btn-outline-danger ms-auto" onClick={(e) => deleteIssues(e, d._id)}>
+                              Delete
+                            </button>
+                          </div>
+                        }
+                      />
+                    </Col>
+                  ))}
+                </Row>
+              )}
+            </Tab>
+            <Tab eventKey="profile" title={`Trash (${trashed.length})`}>
+              {trashed.length === 0 ? (
+                <EmptyState title="Trash is empty" sub="Deleted issues will show up here." />
+              ) : (
+                <Row className="g-3 mt-1">
+                  {trashed.map((d) => (
+                    <Col md={6} xl={4} key={d._id}>
+                      <IssueCard
+                        d={d}
+                        footer={
+                          <div className="d-flex gap-2">
+                            <button className="btn btn-sm btn-ink" onClick={(e) => resolvedIssues(e, d._id)}>
+                              Restore
+                            </button>
+                            <button className="btn btn-sm btn-outline-danger ms-auto" onClick={(e) => deletePermanentTask(e, d._id)}>
+                              Delete forever
+                            </button>
+                          </div>
+                        }
+                      />
+                    </Col>
+                  ))}
+                </Row>
+              )}
+            </Tab>
+          </Tabs>
+        )}
+      </div>
+    </div>
   );
 }
 

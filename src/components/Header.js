@@ -1,130 +1,119 @@
-import React, { useEffect, useState } from "react";
-import { backDark } from "../utils/color";
-import { Link } from "react-router-dom";
-import { handleLogout } from "../utils/isAuth";
+import React from "react";
+import { Link, useLocation } from "react-router-dom";
 import Searchbar from "./Searchbar";
 import { getAllFile } from "../api";
 import { showToastError } from "../utils/action";
 
+const NAV_GROUPS = [
+  { label: "Home", to: "/" },
+  { label: "Company", to: "/add-company" },
+  { label: "Resolve", to: "/resolve" },
+  { label: "Tasks", to: "/task", badgeKey: "len" },
+  { label: "Expenses", to: "/expence" },
+  { label: "Learning", to: "/learning" },
+  { label: "Alarm", to: "/alarm" },
+];
+
 function Header({ len }) {
-  const [checkFile, setCheckFile] = useState([]);
+  const [checkFile, setCheckFile] = React.useState([]);
+  const location = useLocation();
 
   async function getFiles() {
     try {
-      const response = await getAllFile()
+      const response = await getAllFile();
       if (response.status === 200) {
-        setCheckFile(response.data?.files)
-
+        setCheckFile(response.data?.files);
       }
     } catch (error) {
-      showToastError(error)
-
+      showToastError(error);
     }
   }
-  useEffect(() => {
-    getFiles()
+  React.useEffect(() => {
+    getFiles();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, []);
 
+  const notebookLink = checkFile[0]
+    ? `/notebook/${checkFile[0]?._id}-${checkFile[0]?.fileName}`
+    : "/notebook/new-notebook";
 
+  const isActive = (to) =>
+    to === "/" ? location.pathname === "/" : location.pathname.startsWith(to);
+
+  const { handleLogout } = require("../utils/isAuth");
 
   return (
-    <nav>
-      <nav
-        class="navbar navbar-expand-lg navbar-dark fixed-top"
-        style={{ backgroundColor: backDark }}
-      >
-        <div class="container-fluid">
-          <Link class="navbar-brand" to="/">
-            <h4 className="text-info mt-2">
-              <strong>W-M-S</strong>
-            </h4>
-          </Link>
-          <button
-            class="navbar-toggler"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent"
-            aria-expanded="false"
-            aria-label="Toggle navigation"
-          >
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-              <li class="nav-item">
-                <Link class="nav-link active" aria-current="page" to="/">
-                  Home
+    <nav className="navbar navbar-expand-lg navbar-dark fixed-top redis-topbar">
+      <div className="container-fluid px-3">
+        <Link className="navbar-brand redis-brand" to="/">
+          <span className="redis-brand-mark">R</span>
+          <span>
+            W-M-S
+            <span style={{ color: "var(--redis-red)", marginLeft: 6 }}>●</span>
+          </span>
+        </Link>
+        <button
+          className="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span className="navbar-toggler-icon"></span>
+        </button>
+        <div className="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul className="navbar-nav me-auto mb-2 mb-lg-0 redis-nav gap-1">
+            {NAV_GROUPS.map((n) => (
+              <li className="nav-item" key={n.to}>
+                <Link
+                  className={`nav-link ${isActive(n.to) ? "active-link" : ""}`}
+                  aria-current={isActive(n.to) ? "page" : undefined}
+                  to={n.to}
+                >
+                  {n.label}
+                  {n.badgeKey && typeof len === "number" && len > 0 && (
+                    <span
+                      className="badge ms-1"
+                      style={{ background: "var(--redis-red)" }}
+                    >
+                      {len}
+                    </span>
+                  )}
                 </Link>
               </li>
-              <li class="nav-item">
-                <Link class="nav-link active" to="/add-company">
-                  Add company
-                </Link>
-              </li>
-
-              <li class="nav-item">
-                <Link class="nav-link active" to="/resolve">
-                  Resolve
-                </Link>
-              </li>
-              <li class="nav-item">
-                <Link class="nav-link active" to="/task">
-                  My task
-                  <span class="badge bg-success">{len}</span>
-                </Link>
-              </li>
-              <li class="nav-item">
-                <Link class="nav-link active" to="/expence">
-                  My expences
-                </Link>
-              </li>
-              <li class="nav-item">
-                <Link class="nav-link active" to="/learning">
-                  My learning
-                </Link>
-              </li>
-              <li class="nav-item">
-                <Link class="nav-link active" to="/alarm">
-                  My alarm
-                </Link>
-              </li>
-              <li class="nav-item">
-                <Link class="nav-link active bg-warning rounded text-black fw-bold" to={`/notebook/${checkFile[0]?._id}-${checkFile[0]?.fileName}`}>
-                  My notebook
-                </Link>
-              </li>
-            </ul>
-            <div class="d-flex align-items-center gap-2">
-              <div className="me-3">
-                <Searchbar />
-              </div>
+            ))}
+            <li className="nav-item">
               <Link
-                to="/code-editor"
-                class="btn btn-danger"
-                type="button"
+                className={`nav-link ${location.pathname.startsWith("/notebook") ? "active-link" : ""}`}
+                to={notebookLink}
               >
-                Code Editor
+                Notebook
               </Link>
-              <Link
-                to="/cloud-storage?type=folder&lable=root&stage=1"
-                class="btn btn-primary"
-                type="button"
-              >
-                Cloud storage
-              </Link>
-              <button
-                class="btn btn-outline-danger"
-                type="button"
-                onClick={() => handleLogout()}
-              >
-                Logout
-              </button>
-            </div>
+            </li>
+          </ul>
+          <div className="d-flex align-items-center gap-2 py-2 py-lg-0">
+            <Searchbar />
+            <Link to="/code-editor" className="btn btn-sm btn-ink">
+              Code Editor
+            </Link>
+            <Link
+              to="/cloud-storage?type=folder&lable=root&stage=1"
+              className="btn btn-sm btn-redis"
+            >
+              Cloud storage
+            </Link>
+            <button
+              className="btn btn-sm btn-outline-light"
+              type="button"
+              onClick={() => handleLogout()}
+            >
+              Logout
+            </button>
           </div>
         </div>
-      </nav>
+      </div>
     </nav>
   );
 }

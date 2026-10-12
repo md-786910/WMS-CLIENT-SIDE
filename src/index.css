@@ -6,83 +6,38 @@
 }
 body {
   margin: 0;
-  font-family: "Schibsted Grotesk", sans-serif;
+  font-family: var(--font, "Schibsted Grotesk", sans-serif);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background: var(--bg, #f7f7f8);
+  color: var(--text, #1a1e23);
 }
-.sectioNav {
-  padding: 2em 0.5em;
-}
-section {
-  margin-top: 1em;
-  padding: 0em 2em;
-  /* margin-bottom: -4em; */
+h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.25; }
+h2 { font-size: 20px; font-weight: 700; letter-spacing: -0.01em; line-height: 1.35; }
+h3 { font-size: 16px; font-weight: 600; line-height: 1.4; }
+p { font-weight: 400; line-height: 1.55; color: var(--text); }
+small, .muted { color: var(--muted); }
+
+section { margin-top: 20px; padding: 0; }
+@media screen and (max-width: 595px) {
+  section { padding: 0; }
 }
 
-h1 {
-  font-size: 2.5em;
-  font-weight: 700;
-}
-h2 {
-  font-size: 2em;
-}
-h3 {
-  font-size: 1.5em;
-}
+/* Scrollbar — visible but subtle */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #c9ccd1; border-radius: 8px; }
+::-webkit-scrollbar-thumb:hover { background: var(--redis-red); }
 
-p {
-  font-weight: 500;
-}
-/* width */
-::-webkit-scrollbar {
-  width: 5px;
-}
+.videoSame a { text-decoration: none !important; }
+.ptr { cursor: pointer; }
+.searchTag a { text-decoration: none; color: var(--text); font-weight: 600; font-size: 15px; line-height: 1.45; }
+.card-body a { text-decoration: none; color: var(--text); font-weight: 600; font-size: 15px; }
+.cursor, .cursor a { cursor: grab; }
+.companyStatus a { text-decoration: none; color: var(--text); font-weight: 500; font-size: 14px; }
+.CodeMirror * { font-size: 18px !important; }
 
-/* Track */
-::-webkit-scrollbar-track {
-  background: #393646;
-}
-
-/* Handle */
-::-webkit-scrollbar-thumb {
-  background: #393646;
-}
-
-/* Handle on hover */
-::-webkit-scrollbar-thumb:hover {
-  background: #393646;
-}
-.videoSame a {
-  text-decoration: none !important;
-}
-
-.ptr {
-  cursor: pointer;
-}
-.searchTag a {
-  text-decoration: none;
-  color: black;
-  font-weight: 600;
-  font-size: 21px;
-}
-.card-body a {
-  text-decoration: none;
-  color: black;
-  font-weight: 600;
-  font-size: 18px;
-}
-
-.cursor,
-.cursor a {
-  cursor: grab;
-}
-.companyStatus a {
-  text-decoration: none;
-  color: black;
-  font-weight: 500;
-  font-size: 17px;
-}
-
-.CodeMirror * {
-  font-size: 18px !important;
+a:focus-visible, button:focus-visible, input:focus-visible {
+  outline: 2px solid var(--redis-red);
+  outline-offset: 2px;
 }

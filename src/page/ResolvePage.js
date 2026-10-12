@@ -1,16 +1,14 @@
 import React from 'react'
 import { Container } from "react-bootstrap";
 import Resolve from '../components/Resolver/Resolve';
+import Footer from '../components/Footer';
 
 function ResolverPage() {
     return (
-        <Container fluid className="p-0" style={{ marginTop: "6em" }}>
-
+        <Container fluid className="app-fluid">
             <Resolve />
-
-
+            <Footer />
         </Container>
-
     )
 }
 

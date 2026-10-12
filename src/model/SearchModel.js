@@ -71,12 +71,12 @@ function SearchModel(props) {
         aria-labelledby="contained-modal-title-vcenter"
         centered
       >
-        <Modal.Header >
+        <Modal.Header style={{ borderBottom: "1px solid var(--border)" }}>
           <Modal.Title style={{ width: "100%" }}>
             <input
-              class="form-control me-2"
+              className="form-control me-2"
               type="search"
-              placeholder="Search issues"
+              placeholder="Search issues, companies, notes… (min 3 chars)"
               aria-label="Search"
               name="search"
               value={search}
@@ -84,16 +84,15 @@ function SearchModel(props) {
               ref={inputRef}
               style={{
                 width: '100%',
-                height: '50px',
-                padding: '10px',
-                borderRadius: '5px',
-                backgroundColor: '#f1f1f1',
-                border: 'none',
+                height: '48px',
+                padding: '10px 14px',
+                borderRadius: '10px',
+                backgroundColor: '#fff',
+                border: '1px solid var(--border-strong)',
                 outline: 'none',
-                boxShadow: '0 2px 6px 0 rgba(0,0,0,0.2)',
-                cursor: 'pointer',
-                fontSize: '18px',
-                fontWeight: 'bold',
+                boxShadow: 'var(--shadow-sm)',
+                fontSize: '15px',
+                fontWeight: '500',
               }}
             />
             {
@@ -107,9 +106,9 @@ function SearchModel(props) {
             {
               data?.map((elem, index) => {
                 return (
-                  <div className='card p-2 searchTag border shadow-sm border-primary mb-3' key={index}>
+                  <div className='card p-2 px-3 searchTag mb-2' style={{ border: "1px solid var(--border)", borderRadius: 10 }} key={index}>
                     <Link to={`/${elem?.redirectTo}`} onClick={() => handleClose()}>
-                      <div dangerouslySetInnerHTML={{ __html: elem?.title || elem?.name || elem?.fileName || elem?.content?.slice(0, 100) }} />
+                      <div className="clamp-2" dangerouslySetInnerHTML={{ __html: elem?.title || elem?.name || elem?.fileName || elem?.content?.slice(0, 100) }} />
                     </Link>
 
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Editor } from "@tinymce/tinymce-react";
 import { useParams } from 'react-router-dom';
 import { createNotebook, getAllContentNotebook } from '../../api';
@@ -10,23 +10,18 @@ import debounce from 'lodash.debounce';
 function NotebookIndex() {
     const { fileName } = useParams();
     const [initVal, setInitVal] = useState("");
-    const [content, setContent] = useState("");
+    const [loading, setLoading] = useState(true);
 
     const editorRef = useRef();
-    const debouncedChangeHandler = debounce(handleChange, 500); // 500ms delay
     const fileSplit = fileName?.split("-")[0];
-
-
-
 
     async function handleChange(content) {
         try {
             if (content !== "") {
                 const data = { content, fileId: fileSplit };
-                console.log({ data })
                 const resp = await createNotebook(data);
                 if (resp.status === 201) {
-                    // pass
+                    // autosaved
                 }
             }
         } catch (error) {
@@ -34,26 +29,29 @@ function NotebookIndex() {
         }
     };
 
-    useEffect(() => {
-        const editor = editorRef.current;
-        if (editor) {
-            editor.on('input', (e) => {
-                debouncedChangeHandler(editor.getContent());
-                setContent(editor.getContent());
-            });
-        }
+    // Stable debounced saver per file — recreated only when file changes
+    const debouncedChangeHandler = useMemo(
+        () => debounce((content) => handleChange(content), 500),
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [editorRef]);
+        [fileSplit]
+    );
 
+    useEffect(() => {
+        return () => debouncedChangeHandler.cancel();
+    }, [debouncedChangeHandler]);
 
     async function getAllContent() {
+        setLoading(true);
+        setInitVal("");
         try {
             const resp = await getAllContentNotebook(fileSplit);
             if (resp.status === 200) {
-                setInitVal(resp.data?.content?.content);
+                setInitVal(resp.data?.content?.content || "");
             }
         } catch (error) {
             showToastError(error.message);
+        } finally {
+            setLoading(false);
         }
     }
 
@@ -65,21 +63,28 @@ function NotebookIndex() {
 
 
     return (
-        <div>
-            {(
-                <div className="card-body">
+        <div className="section-card p-2 p-md-3">
+            {loading ? (
+                <div className="p-3">
+                    <div className="skel mb-2" style={{ height: 14, width: "30%" }} />
+                    <div className="skel mb-2" style={{ height: 12, width: "90%" }} />
+                    <div className="skel mb-2" style={{ height: 12, width: "80%" }} />
+                    <div className="skel" style={{ height: 320, width: "100%" }} />
+                </div>
+            ) : (
+                <div className="card-body p-0">
                     <div className="">
                         <Editor
+                            key={fileSplit}
                             onInit={(evt, editor) => {
                                 editorRef.current = editor;
-                                editor.on('input', (e) => {
+                                editor.on('input', () => {
                                     debouncedChangeHandler(editor.getContent());
-                                    setContent(editor.getContent());
                                 });
                             }}
                             initialValue={initVal}
                             init={{
-                                height: 800,
+                                height: 640,
                                 menubar: false,
                                 plugins: [
                                     "advlist",
